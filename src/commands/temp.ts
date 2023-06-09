@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, GuildMember } from 'discord.js';
 import { ICommand } from '../interfaces/command';
 
 import api from '../services/weatherApi';
@@ -30,10 +30,12 @@ class TempCommand extends ICommand {
       const { temp, feels_like: tempFeelsLike, humidity } = response.data.main;
       const icon = response.data.weather[0].icon;
 
+      const nickname = (interaction.member as GuildMember).nickname || interaction.user.username;
+
       const embed = new EmbedBuilder()
         .setTitle(`🧭 ${cityName}`)
         .setColor(temperatureToColor(temp))
-        .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() || '' })
+        .setAuthor({ name: nickname, iconURL: interaction.user.avatarURL() || '' })
         .setThumbnail(
           `http://openweathermap.org/img/wn/${icon}@2x.png`
         )
