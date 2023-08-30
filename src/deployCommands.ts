@@ -6,6 +6,7 @@ import { REST, Routes } from 'discord.js';
 import { PingCommand } from "./commands/ping";
 import { RollCommand } from './commands/roll';
 import { TempCommand } from './commands/temp';
+import { MinecraftOddsCommand } from './commands/minecraftOdds';
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN || "");
 
@@ -16,6 +17,7 @@ const loadCommands = () => {
     new PingCommand(),
 		new RollCommand(),
 		new TempCommand(),
+		new MinecraftOddsCommand()
   ].map(({ command }) => command.toJSON());
 
   commands.push(..._commands);

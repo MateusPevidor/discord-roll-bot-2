@@ -6,6 +6,7 @@ import { Client, Events, GatewayIntentBits } from 'discord.js';
 import { PingCommand } from './commands/ping';
 import { RollCommand } from './commands/roll';
 import { TempCommand } from './commands/temp';
+import { MinecraftOddsCommand } from './commands/minecraftOdds';
 import { ICommand } from './interfaces/command';
 
 const client = new Client({
@@ -22,6 +23,7 @@ client.once(Events.ClientReady, c => {
   commands.ping = new PingCommand();
   commands.roll = new RollCommand();
   commands.temp = new TempCommand();
+  commands.mcodds = new MinecraftOddsCommand();
 
   client.user?.setPresence({
     activities: [
