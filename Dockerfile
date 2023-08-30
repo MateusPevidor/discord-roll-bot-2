@@ -9,4 +9,5 @@ RUN cat package.json
 RUN which npm
 RUN npm i --production
 
+CMD [ "npm", "run", "deploy-commands" ]
 CMD [ "npm", "run", "start" ]
