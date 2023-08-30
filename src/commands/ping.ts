@@ -7,8 +7,8 @@ class PingCommand extends ICommand {
     super('ping', 'Pings the bot');
   }
 
-  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-    interaction.reply('Pong!');
+  async execute(interaction: ChatInputCommandInteraction) {
+    return interaction.reply('Pong!');
   }
 }
 

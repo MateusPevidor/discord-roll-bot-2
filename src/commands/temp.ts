@@ -16,7 +16,7 @@ class TempCommand extends ICommand {
     });
   }
 
-  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+  async execute(interaction: ChatInputCommandInteraction) {
     const city = interaction.options.getString('city');
 
     try {
@@ -51,12 +51,12 @@ class TempCommand extends ICommand {
           iconURL: "https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png"
         });
 
-      interaction.reply({ embeds: [embed] })
+      return interaction.reply({ embeds: [embed] })
     } catch (err: any) {
       if (err?.response?.status === 404) {
-        interaction.reply('Cidade não encontrada');
+        return interaction.reply('Cidade não encontrada');
       } else {
-        interaction.reply('Ocorreu um erro 😯');
+        return interaction.reply('Ocorreu um erro 😯');
       }
     }
   }

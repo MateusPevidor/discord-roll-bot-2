@@ -1,7 +1,8 @@
 
+import { InteractionResponse } from 'discord.js';
 import { Interaction, SlashCommandBuilder } from 'discord.js';
 
-class ICommand {
+abstract class ICommand {
 
   command: SlashCommandBuilder;
 
@@ -11,7 +12,7 @@ class ICommand {
       .setDescription(description);
   }
 
-  async execute(interaction: Interaction) {}
+  abstract execute(interaction: Interaction): Promise<InteractionResponse<boolean>>;
 }
 
 export { ICommand }
