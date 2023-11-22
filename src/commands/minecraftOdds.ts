@@ -104,14 +104,18 @@ class MinecraftOddsCommand extends ICommand {
   eyeCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean>> {
     const count = interaction.options.getInteger('count') || 0;
     const exact = !!interaction.options.getBoolean('exact');
-    console.log(exact);
 
-    const result = this.calculateOdds(12, count, 0.1, !exact);
-    if (!exact) {
-      return interaction.reply(`<@${interaction.user.id}> Odds of at least ${count} eye: ${result}%`)
-    } else {
-      return interaction.reply(`<@${interaction.user.id}> Odds of exactly ${count} eye: ${result}%`)
+    try {
+      const result = this.calculateOdds(12, count, 0.1, !exact);
+      if (!exact) {
+        return interaction.reply(`<@${interaction.user.id}> Odds of at least ${count} eye: ${result}%`)
+      } else {
+        return interaction.reply(`<@${interaction.user.id}> Odds of exactly ${count} eye: ${result}%`)
+      }
+    } catch (err) {
+      return interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
     }
+
   }
 
   blazeCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean>> {
@@ -119,11 +123,15 @@ class MinecraftOddsCommand extends ICommand {
     const rods = interaction.options.getInteger('rods') || 0;
     const exact = !!interaction.options.getBoolean('exact');
 
-    const result = this.calculateOdds(kills, rods, 0.5, !exact);
-    if (!exact) {
-      return interaction.reply(`<@${interaction.user.id}> Odds of dropping at least ${rods} rods from ${kills} blazes: ${result}%`);
-    } else {
-      return interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${rods} rods from ${kills} blazes: ${result}%`);
+    try {
+      const result = this.calculateOdds(kills, rods, 0.5, !exact);
+      if (!exact) {
+        return interaction.reply(`<@${interaction.user.id}> Odds of dropping at least ${rods} rods from ${kills} blazes: ${result}%`);
+      } else {
+        return interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${rods} rods from ${kills} blazes: ${result}%`);
+      }
+    } catch (err) {
+      return interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
     }
   }
 
@@ -132,15 +140,20 @@ class MinecraftOddsCommand extends ICommand {
     const flints = interaction.options.getInteger('flints') || 0;
     const exact = !!interaction.options.getBoolean('exact');
 
-    const result = this.calculateOdds(gravels, flints, 0.1, !exact);
-    if (!exact) {
-      return interaction.reply(`<@${interaction.user.id}> Odds of dropping at least ${flints} flints from ${gravels} gravels: ${result}%`);
-    } else {
-      return interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${flints} flints from ${gravels} gravels: ${result}%`);
+    try {
+      const result = this.calculateOdds(gravels, flints, 0.1, !exact);
+      if (!exact) {
+        return interaction.reply(`<@${interaction.user.id}> Odds of dropping at least ${flints} flints from ${gravels} gravels: ${result}%`);
+      } else {
+        return interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${flints} flints from ${gravels} gravels: ${result}%`);
+      }
+    } catch (err) {
+      return interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
     }
   }
 
   calculateOdds(n: number, k: number, eventOdds: number, expand = false) {
+    if (k > n) throw new Error("k cannot be greater than n");
     const { pow, combinations, chain, bignumber, format } = this.math;
 
     if (expand) {
