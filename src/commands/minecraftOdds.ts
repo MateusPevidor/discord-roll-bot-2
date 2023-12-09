@@ -22,11 +22,16 @@ class MinecraftOddsCommand extends ICommand {
               .setMaxValue(12)
               .setRequired(true)
           })
-          .addBooleanOption(option => {
+          .addStringOption(option => {
             return option
-              .setName('exact')
-              .setDescription(`Whether it's the odds of exactly x eyes or at least x eyes`)
+              .setName('type')
+              .setDescription(`Whether it's the odds of exactly, at least or at most x eyes`)
               .setRequired(true)
+              .addChoices(
+                { name: 'x or more', value: 'or_less' },
+                { name: 'x or more', value: 'or_more' },
+                { name: 'Exactly x', value: 'exact' }
+              )
           })
       })
       .addSubcommand(subcommand => {
@@ -47,11 +52,16 @@ class MinecraftOddsCommand extends ICommand {
               .setMinValue(0)
               .setRequired(true)
           })
-          .addBooleanOption(option => {
+          .addStringOption(option => {
             return option
-              .setName('exact')
-              .setDescription(`Whether it's the odds of exactly x rods or at least x rods`)
+              .setName('type')
+              .setDescription(`Whether it's the odds of exactly, at least or at most x rods`)
               .setRequired(true)
+              .addChoices(
+                { name: 'x or more', value: 'or_less' },
+                { name: 'x or more', value: 'or_more' },
+                { name: 'Exactly x', value: 'exact' }
+              )
           })
       })
       .addSubcommand(subcommand => {
@@ -72,11 +82,16 @@ class MinecraftOddsCommand extends ICommand {
               .setMinValue(0)
               .setRequired(true)
           })
-          .addBooleanOption(option => {
+          .addStringOption(option => {
             return option
-              .setName('exact')
-              .setDescription(`Whether it's the odds of exactly x flints or at least x flints`)
+              .setName('type')
+              .setDescription(`Whether it's the odds of exactly, at least or at most x flints`)
               .setRequired(true)
+              .addChoices(
+                { name: 'x or more', value: 'or_less' },
+                { name: 'x or more', value: 'or_more' },
+                { name: 'Exactly x', value: 'exact' }
+              )
           })
       })
 
@@ -103,30 +118,33 @@ class MinecraftOddsCommand extends ICommand {
 
   eyeCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean>> {
     const count = interaction.options.getInteger('count') || 0;
-    const exact = !!interaction.options.getBoolean('exact');
+    const countType = interaction.options.getString('type')!;
 
     try {
-      const result = this.calculateOdds(12, count, 0.1, !exact);
-      if (!exact) {
-        return interaction.reply(`<@${interaction.user.id}> Odds of at least ${count} eye: ${result}%`)
+      const result = this.calculateOdds(12, count, 0.1, countType);
+      if (countType === 'or_less') {
+        return interaction.reply(`<@${interaction.user.id}> Odds of ${count} or less eyes: ${result}%`);
+      } else if (countType === 'or_more') {
+        return interaction.reply(`<@${interaction.user.id}> Odds of ${count} or more eyes: ${result}%`);
       } else {
-        return interaction.reply(`<@${interaction.user.id}> Odds of exactly ${count} eye: ${result}%`)
+        return interaction.reply(`<@${interaction.user.id}> Odds of exactly ${count} eyes: ${result}%`);
       }
     } catch (err) {
       return interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
     }
-
   }
 
   blazeCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean>> {
     const kills = interaction.options.getInteger('kills') || 0;
     const rods = interaction.options.getInteger('rods') || 0;
-    const exact = !!interaction.options.getBoolean('exact');
+    const countType = interaction.options.getString('type')!;
 
     try {
-      const result = this.calculateOdds(kills, rods, 0.5, !exact);
-      if (!exact) {
-        return interaction.reply(`<@${interaction.user.id}> Odds of dropping at least ${rods} rods from ${kills} blazes: ${result}%`);
+      const result = this.calculateOdds(kills, rods, 0.5, countType);
+      if (countType === 'or_less') {
+        return interaction.reply(`<@${interaction.user.id}> Odds of dropping ${rods} or less rods from ${kills} blazes: ${result}%`);
+      } else if (countType === 'or_more') {
+        return interaction.reply(`<@${interaction.user.id}> Odds of dropping ${rods} or more rods from ${kills} blazes: ${result}%`);
       } else {
         return interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${rods} rods from ${kills} blazes: ${result}%`);
       }
@@ -138,12 +156,14 @@ class MinecraftOddsCommand extends ICommand {
   flintCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean>> {
     const gravels = interaction.options.getInteger('gravels') || 0;
     const flints = interaction.options.getInteger('flints') || 0;
-    const exact = !!interaction.options.getBoolean('exact');
+    const countType = interaction.options.getString('type')!;
 
     try {
-      const result = this.calculateOdds(gravels, flints, 0.1, !exact);
-      if (!exact) {
-        return interaction.reply(`<@${interaction.user.id}> Odds of dropping at least ${flints} flints from ${gravels} gravels: ${result}%`);
+      const result = this.calculateOdds(gravels, flints, 0.1, countType);
+      if (countType === 'or_less') {
+        return interaction.reply(`<@${interaction.user.id}> Odds of dropping ${flints} or less flints from ${gravels} gravels: ${result}%`);
+      } else if (countType === 'or_more') {
+        return interaction.reply(`<@${interaction.user.id}> Odds of dropping ${flints} or more flints from ${gravels} gravels: ${result}%`);
       } else {
         return interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${flints} flints from ${gravels} gravels: ${result}%`);
       }
@@ -152,11 +172,21 @@ class MinecraftOddsCommand extends ICommand {
     }
   }
 
-  calculateOdds(n: number, k: number, eventOdds: number, expand = false) {
+  calculateOdds(n: number, k: number, eventOdds: number, type: string) {
     if (k > n) throw new Error("k cannot be greater than n");
     const { pow, combinations, chain, bignumber, format } = this.math;
 
-    if (expand) {
+    if (type === 'or_less') {
+      let odds = chain(0) as MathJsChain<MathType>;
+      for (let i = 0; i <= k; i++) {
+        const iterationOdds = chain(1)
+          .multiply(pow(bignumber(eventOdds), i))
+          .multiply(pow(bignumber(1 - eventOdds), n - i))
+          .multiply(combinations(n, i));
+        odds = odds.add(iterationOdds.done());
+      }
+      return format(odds.multiply(100).done(), { notation: 'fixed' });
+    } else if (type === 'or_more') {
       let odds = chain(0) as MathJsChain<MathType>;
       for (let i = 0; i < n - k + 1; i++) {
         const iterationOdds = chain(1)
