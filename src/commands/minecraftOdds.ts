@@ -28,7 +28,7 @@ class MinecraftOddsCommand extends ICommand {
               .setDescription(`Whether it's the odds of exactly, at least or at most x eyes`)
               .setRequired(true)
               .addChoices(
-                { name: 'x or more', value: 'or_less' },
+                { name: 'x or less', value: 'or_less' },
                 { name: 'x or more', value: 'or_more' },
                 { name: 'Exactly x', value: 'exact' }
               )
@@ -58,7 +58,7 @@ class MinecraftOddsCommand extends ICommand {
               .setDescription(`Whether it's the odds of exactly, at least or at most x rods`)
               .setRequired(true)
               .addChoices(
-                { name: 'x or more', value: 'or_less' },
+                { name: 'x or less', value: 'or_less' },
                 { name: 'x or more', value: 'or_more' },
                 { name: 'Exactly x', value: 'exact' }
               )
@@ -88,7 +88,7 @@ class MinecraftOddsCommand extends ICommand {
               .setDescription(`Whether it's the odds of exactly, at least or at most x flints`)
               .setRequired(true)
               .addChoices(
-                { name: 'x or more', value: 'or_less' },
+                { name: 'x or less', value: 'or_less' },
                 { name: 'x or more', value: 'or_more' },
                 { name: 'Exactly x', value: 'exact' }
               )
