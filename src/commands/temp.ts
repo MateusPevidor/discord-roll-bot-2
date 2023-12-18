@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, GuildMember } from 'discord.
 import { ICommand } from '../interfaces/command';
 
 import api from '../services/weatherApi';
-import { temperatureToColor } from '../utils/utils';
+import { temperatureToColor } from '../utils';
 
 class TempCommand extends ICommand {
 
@@ -25,7 +25,7 @@ class TempCommand extends ICommand {
           q: city,
         },
       });
-  
+
       const cityName = response.data.name;
       const { temp, feels_like: tempFeelsLike, humidity } = response.data.main;
       const icon = response.data.weather[0].icon;
