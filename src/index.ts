@@ -39,7 +39,12 @@ client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
   const command = commands[interaction.commandName];
-  command.execute(interaction);
+
+  try {
+    await command.execute(interaction);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 client.login(process.env.DISCORD_TOKEN);

@@ -1,8 +1,7 @@
-import { APIApplicationCommandOptionChoice, ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { ICommand } from '../interfaces/command';
-import { InteractionResponse } from 'discord.js';
 import { create as MathCreate, all as MathAll } from 'mathjs';
-import { MathJsChain, MathType, MathJsStatic } from 'mathjs';
+import { MathJsChain, MathType, MathJsStatic, BigNumber } from 'mathjs';
 import { generateSequenceArray, integerPartition } from '../utils';
 
 const barterData = {
@@ -48,6 +47,7 @@ type Barter = keyof typeof barterData;
 
 class MinecraftOddsCommand extends ICommand {
   math: MathJsStatic;
+  approximate: boolean = false;
 
   constructor() {
     super('mcodds', 'Calculates the odds of an event happening');
@@ -196,6 +196,8 @@ class MinecraftOddsCommand extends ICommand {
       return interaction.reply(`Error`);
     }
 
+    this.approximate = false;
+
     const subCommandName = interaction.options.getSubcommand();
 
     if (!(subCommandName in this.subCommandMap)) {
@@ -205,25 +207,25 @@ class MinecraftOddsCommand extends ICommand {
     return this.subCommandMap[subCommandName](interaction);
   }
 
-  eyeCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean>> {
+  async eyeCommand(interaction: ChatInputCommandInteraction) {
     const count = interaction.options.getInteger('count') || 0;
     const countType = interaction.options.getString('type')!;
 
     try {
       const result = this.calculateOdds(12, count, 0.1, countType);
       if (countType === 'or_less') {
-        return interaction.reply(`<@${interaction.user.id}> Odds of ${count} or less eyes: ${result}%`);
+        return await interaction.reply(`<@${interaction.user.id}> Odds of ${count} or less eyes: ${result}%`);
       } else if (countType === 'or_more') {
-        return interaction.reply(`<@${interaction.user.id}> Odds of ${count} or more eyes: ${result}%`);
+        return await interaction.reply(`<@${interaction.user.id}> Odds of ${count} or more eyes: ${result}%`);
       } else {
-        return interaction.reply(`<@${interaction.user.id}> Odds of exactly ${count} eyes: ${result}%`);
+        return await interaction.reply(`<@${interaction.user.id}> Odds of exactly ${count} eyes: ${result}%`);
       }
     } catch (err) {
-      return interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
+      return await interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
     }
   }
 
-  blazeCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean>> {
+  async blazeCommand(interaction: ChatInputCommandInteraction) {
     const kills = interaction.options.getInteger('kills') || 0;
     const rods = interaction.options.getInteger('rods') || 0;
     const countType = interaction.options.getString('type')!;
@@ -231,18 +233,18 @@ class MinecraftOddsCommand extends ICommand {
     try {
       const result = this.calculateOdds(kills, rods, 0.5, countType);
       if (countType === 'or_less') {
-        return interaction.reply(`<@${interaction.user.id}> Odds of dropping ${rods} or less rods from ${kills} blazes: ${result}%`);
+        return await interaction.reply(`<@${interaction.user.id}> Odds of dropping ${rods} or less rods from ${kills} blazes: ${result}%`);
       } else if (countType === 'or_more') {
-        return interaction.reply(`<@${interaction.user.id}> Odds of dropping ${rods} or more rods from ${kills} blazes: ${result}%`);
+        return await interaction.reply(`<@${interaction.user.id}> Odds of dropping ${rods} or more rods from ${kills} blazes: ${result}%`);
       } else {
-        return interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${rods} rods from ${kills} blazes: ${result}%`);
+        return await interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${rods} rods from ${kills} blazes: ${result}%`);
       }
     } catch (err) {
-      return interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
+      return await interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
     }
   }
 
-  flintCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean>> {
+  async flintCommand(interaction: ChatInputCommandInteraction) {
     const gravels = interaction.options.getInteger('gravels') || 0;
     const flints = interaction.options.getInteger('flints') || 0;
     const countType = interaction.options.getString('type')!;
@@ -250,111 +252,139 @@ class MinecraftOddsCommand extends ICommand {
     try {
       const result = this.calculateOdds(gravels, flints, 0.1, countType);
       if (countType === 'or_less') {
-        return interaction.reply(`<@${interaction.user.id}> Odds of dropping ${flints} or less flints from ${gravels} gravels: ${result}%`);
+        return await interaction.reply(`<@${interaction.user.id}> Odds of dropping ${flints} or less flints from ${gravels} gravels: ${result}%`);
       } else if (countType === 'or_more') {
-        return interaction.reply(`<@${interaction.user.id}> Odds of dropping ${flints} or more flints from ${gravels} gravels: ${result}%`);
+        return await interaction.reply(`<@${interaction.user.id}> Odds of dropping ${flints} or more flints from ${gravels} gravels: ${result}%`);
       } else {
-        return interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${flints} flints from ${gravels} gravels: ${result}%`);
+        return await interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${flints} flints from ${gravels} gravels: ${result}%`);
       }
     } catch (err) {
-      return interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
+      return await interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
     }
   }
 
-  barterCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean>> {
+  async barterCommand(interaction: ChatInputCommandInteraction) {
     const trades = interaction.options.getInteger('trades') || 0;
     const dropCount = interaction.options.getInteger('drops') || 0;
     const lootType = interaction.options.getString('loot') as Barter;
     const countType = interaction.options.getString('type')!;
 
+    const barter = barterData[lootType];
+
     try {
-      // const result = this.math.factorial(this.math.bignumber(200));
-      console.time('command');
+      await interaction.reply(`<@${interaction.user.id}> Calculating...`);
+
       const result = this.barterOdds(trades, dropCount, lootType, countType);
-      console.timeEnd('command');
-      return interaction.reply(`<@${interaction.user.id}> ${result}%`);
+  
+      if (countType === 'or_less') {
+        return await interaction.editReply(`<@${interaction.user.id}> Odds of dropping ${dropCount} or less ${barter.name} from ${trades} trades: ${result}%${this.approximate ? ' (Approximate)' : ''}`);
+      } else if (countType === 'or_more') {
+        return await interaction.editReply(`<@${interaction.user.id}> Odds of dropping ${dropCount} or more ${barter.name} from ${trades} trades: ${result}%${this.approximate ? ' (Approximate)' : ''}`);
+      } else {
+        return await interaction.editReply(`<@${interaction.user.id}> Odds of dropping exactly ${dropCount} ${barter.name} from ${trades} trades: ${result}%`);
+      }
     } catch (err) {
-      return interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
+      return await interaction.editReply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
     }
-    // try {
-    //   const result = this.calculateOdds(gravels, flints, 0.1, countType);
-    //   if (countType === 'or_less') {
-    //     return interaction.reply(`<@${interaction.user.id}> Odds of dropping ${flints} or less flints from ${gravels} gravels: ${result}%`);
-    //   } else if (countType === 'or_more') {
-    //     return interaction.reply(`<@${interaction.user.id}> Odds of dropping ${flints} or more flints from ${gravels} gravels: ${result}%`);
-    //   } else {
-    //     return interaction.reply(`<@${interaction.user.id}> Odds of dropping exactly ${flints} flints from ${gravels} gravels: ${result}%`);
-    //   }
-    // } catch (err) {
-    //   return interaction.reply(`<@${interaction.user.id}> Um erro ocorreu. Verifique seus inputs. (${err})`);
-    // }
-    return interaction.reply('oi');
   }
 
   barterOdds(trades: number, drops: number, loot: Barter, type: string) {
-    if (drops > trades) throw new Error("Drops cannot be greater than Trades");
-    const { pow, factorial, chain, bignumber, format } = this.math;
-
     const barter = barterData[loot];
+
+    if (drops > trades * barter.amount.at(-1)!) throw new Error("Drops cannot be greater than Trades");
+    const { pow, factorial, chain, bignumber, format, compare } = this.math;
+
+    const factorialTable: BigNumber[] = [];
+    function getFactorial(n: number) {
+      if (n in factorialTable) {
+        return factorialTable[n];
+      } else {
+        const result = factorial<BigNumber>(bignumber(n));
+        factorialTable[n] = result;
+        return result;
+      }
+    }
+
+    const roundsTable: Map<string, MathType> = new Map<string, MathType>();
+    function getRound(numbers: number[]) {
+      const key = numbers.sort().join(',');
+      if (roundsTable.has(key)) {
+        return roundsTable.get(key)!;
+      } else {
+        const roundSum = numbers.reduce((acc, curr) => acc + curr, 0);
+
+        if (trades - roundSum < 0) return 0;
+        
+        let coefficient = chain(1)
+          .multiply(getFactorial(trades))
+          .divide(getFactorial(trades - roundSum));
+        
+        for (const repetition of numbers) {
+          coefficient = coefficient.divide(getFactorial(repetition));
+        }
+
+        const iterationOdds = chain(1)
+          .multiply(pow(bignumber(barter.odds), roundSum))
+          .multiply(pow(bignumber(barter.inverseOdds), trades - roundSum))
+          .multiply(coefficient.done())
+          .done();
+
+        roundsTable.set(key, iterationOdds);
+
+        return iterationOdds;
+      }
+    }
+
     if (type === 'or_less') {
       let odds = chain(0) as MathJsChain<MathType>;
       for (let i = 0; i <= drops; i++) {
-        console.time('part');
         const rounds = integerPartition(i, barter.amount);
-        console.timeEnd('part');
+
+        if (rounds.length > 200000) {
+          this.approximate = true;
+          break;
+        }
+
+        let roundOdds: MathType = 0;
         for (const round of rounds) {
-          // console.time('round');
-          const roundSum = round.reduce((acc, curr) => acc + curr, 0);
-
-          let coefficient = chain(1)
-            .multiply(factorial(bignumber(trades)))
-            .divide(factorial(bignumber(trades - roundSum)));
-
-          for (const repetition of round) {
-            coefficient = coefficient.divide(factorial(bignumber(repetition)));
-          }
-
-          let iterationOdds = chain(1)
-            .multiply(pow(bignumber(barter.odds), roundSum))
-            .multiply(pow(bignumber(barter.inverseOdds), trades - roundSum))
-            .multiply(coefficient.done());
-
-          odds = odds.add(iterationOdds.done());
-          // console.timeEnd('round');
+          roundOdds = getRound(round);
+          odds = odds.add(roundOdds);
+        }
+        if (compare(roundOdds, bignumber(1e-20)) == -1 && rounds.length > 1) {
+          this.approximate = true;
+          break;
         }
       }
-      return format(odds.multiply(100).done(), { notation: 'fixed' });
+      return format(odds.multiply(100).done(), { notation: 'fixed', precision: 10 });
     } else if (type === 'or_more') {
-      let odds = chain(0) as MathJsChain<MathType>;
-      for (let i = drops; i <= trades; i++) {
+      let odds = chain(1) as MathJsChain<MathType>;
+      for (let i = 0; i <= drops - 1; i++) {
         const rounds = integerPartition(i, barter.amount);
+
+        if (rounds.length > 200000) {
+          this.approximate = true;
+          break;
+        }
+
+        let roundOdds: MathType = 0;
         for (const round of rounds) {
-          const roundSum = round.reduce((acc, curr) => acc + curr, 0);
-
-          let coefficient = chain(1)
-            .multiply(factorial(bignumber(trades)))
-            .divide(factorial(bignumber(trades - roundSum)));
-
-          for (const repetition of round) {
-            coefficient = coefficient.divide(factorial(bignumber(repetition)));
-          }
-
-          let iterationOdds = chain(1)
-            .multiply(pow(bignumber(barter.odds), roundSum))
-            .multiply(pow(bignumber(barter.inverseOdds), trades - roundSum))
-            .multiply(coefficient.done());
-
-          odds = odds.add(iterationOdds.done());
+          roundOdds = getRound(round);
+          odds = odds.subtract(roundOdds);
+        }
+        if (compare(roundOdds, bignumber(1e-20)) == -1 && rounds.length > 1) {
+          this.approximate = true;
+          break;
         }
       }
-      return format(odds.multiply(100).done(), { notation: 'fixed' });
+      return format(odds.multiply(100).done(), { notation: 'fixed', precision: 10 });
     } else {
-      // const odds = chain(100)
-      //   .multiply(pow(bignumber(eventOdds), k))
-      //   .multiply(pow(bignumber(1 - eventOdds), n - k))
-      //   .multiply(combinations(n, k))
-      //   .done();
-      // return format(odds, { notation: 'fixed' });
+      let odds = chain(0) as MathJsChain<MathType>;
+      const rounds = integerPartition(drops, barter.amount);
+
+      for (const round of rounds) {
+        odds = odds.add(getRound(round));
+      }
+      return format(odds.multiply(100).done(), { notation: 'fixed', precision: 10 });
     }
 
   }

@@ -51,12 +51,12 @@ class TempCommand extends ICommand {
           iconURL: "https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png"
         });
 
-      return interaction.reply({ embeds: [embed] })
+      return await interaction.reply({ embeds: [embed] })
     } catch (err: any) {
       if (err?.response?.status === 404) {
-        return interaction.reply('Cidade não encontrada');
+        return await interaction.reply('Cidade não encontrada');
       } else {
-        return interaction.reply('Ocorreu um erro 😯');
+        return await interaction.reply('Ocorreu um erro 😯');
       }
     }
   }

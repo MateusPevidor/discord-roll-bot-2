@@ -14,12 +14,12 @@ class RollCommand extends ICommand {
 
   async execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.member) {
-      return interaction.reply(`Error`);
+      return await interaction.reply(`Error`);
     }
     const limit = interaction.options.getInteger('limit') || 100;
     const roll = Math.floor(Math.random() * limit) + 1;
 
-    return interaction.reply(`<@${interaction.user.id}> rolled ${roll}`);
+    return await interaction.reply(`<@${interaction.user.id}> rolled ${roll}`);
   }
 }
 

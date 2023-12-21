@@ -29,7 +29,6 @@ function generatePartitionsWithParts(n: number, parts: number[]): number[][] {
   }
 
   generatePartitionHelper(n, n, []);
-
   return partitions;
 }
 
@@ -41,6 +40,7 @@ function countOccurrences(partitions: number[][]): number[][] {
     });
     return Array.from(countMap.values());
   });
+
   return occurences;
 }
 
