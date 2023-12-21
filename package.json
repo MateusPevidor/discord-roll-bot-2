@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "deploy-commands": "ts-node src/deployCommands.ts",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "test": "ts-node ip.ts"
   },
   "keywords": [],
   "author": "",
