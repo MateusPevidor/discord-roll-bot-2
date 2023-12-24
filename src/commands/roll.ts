@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Guild, GuildMember } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { ICommand } from '../interfaces/command';
 
 class RollCommand extends ICommand {
