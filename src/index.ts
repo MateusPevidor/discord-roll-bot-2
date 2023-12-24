@@ -7,6 +7,7 @@ import { PingCommand } from './commands/ping';
 import { RollCommand } from './commands/roll';
 import { TempCommand } from './commands/temp';
 import { MinecraftOddsCommand } from './commands/minecraftOdds';
+import { DiceOddsCommand } from './commands/diceOdds';
 import { ICommand } from './interfaces/command';
 
 const client = new Client({
@@ -24,11 +25,14 @@ client.once(Events.ClientReady, c => {
   commands.roll = new RollCommand();
   commands.temp = new TempCommand();
   commands.mcodds = new MinecraftOddsCommand();
+  commands.diceodds = new DiceOddsCommand();
 
   client.user?.setPresence({
     activities: [
       { name: '/temp' },
-      { name: '/roll' }
+      { name: '/roll' },
+      { name: '/mcodds' },
+      { name: '/diceodds' }
     ]
   });
 

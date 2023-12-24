@@ -7,20 +7,22 @@ import { PingCommand } from "./commands/ping";
 import { RollCommand } from './commands/roll';
 import { TempCommand } from './commands/temp';
 import { MinecraftOddsCommand } from './commands/minecraftOdds';
+import { DiceOddsCommand } from './commands/diceOdds';
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN || "");
 
 const commands = new Array();
 
 const loadCommands = () => {
-  const _commands = [
-    new PingCommand(),
+	const _commands = [
+		new PingCommand(),
 		new RollCommand(),
 		new TempCommand(),
-		new MinecraftOddsCommand()
-  ].map(({ command }) => command.toJSON());
+		new MinecraftOddsCommand(),
+		new DiceOddsCommand(),
+	].map(({ command }) => command.toJSON());
 
-  commands.push(..._commands);
+	commands.push(..._commands);
 }
 
 const deployCommands = async () => {
