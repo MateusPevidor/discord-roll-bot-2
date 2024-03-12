@@ -3,4 +3,4 @@ dotenv.config();
 
 import { RollBot } from './bot';
 
-const bot = new RollBot();
+RollBot.create();

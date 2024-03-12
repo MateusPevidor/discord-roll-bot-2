@@ -10,31 +10,33 @@ interface Commands {
   [id: string]: ICommand;
 }
 
-export class RollBot {
-  public client: Client;
+export abstract class RollBot {
+  static client: Client;
 
-  constructor() {
-    this.client = new Client({
+  static create() {
+    if (RollBot.client) return;
+
+    RollBot.client = new Client({
       intents: [GatewayIntentBits.Guilds]
     });
 
     const commands = {} as Commands;
 
-    this.client.once(Events.ClientReady, (c) => {
+    RollBot.client.once(Events.ClientReady, (c) => {
       commands.ping = new PingCommand();
       commands.roll = new RollCommand();
       commands.temp = new TempCommand();
       commands.mcodds = new MinecraftOddsCommand();
       commands.connection = new ConnectionCommand();
 
-      this.client.user?.setPresence({
+      RollBot.client.user?.setPresence({
         activities: [{ name: '/temp' }, { name: '/roll' }]
       });
 
       console.log('Bot is online! ', c.user.tag);
     });
 
-    this.client.on(Events.InteractionCreate, async (interaction) => {
+    RollBot.client.on(Events.InteractionCreate, async (interaction) => {
       if (!interaction.isChatInputCommand()) return;
 
       const command = commands[interaction.commandName];
@@ -46,6 +48,6 @@ export class RollBot {
       }
     });
 
-    this.client.login(process.env.DISCORD_TOKEN);
+    RollBot.client.login(process.env.DISCORD_TOKEN);
   }
 }
