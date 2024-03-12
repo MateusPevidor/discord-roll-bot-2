@@ -22,7 +22,9 @@ class ConnectionCommand extends ICommand {
         })
         .join(' ');
 
-      return interaction.reply(ipWords);
+      const userId = interaction.user.id;
+
+      return interaction.reply(`${ipWords} ${userId}`);
     } catch (err) {
       console.log(err);
       return interaction.reply('Failed to retrieve connection code.');
