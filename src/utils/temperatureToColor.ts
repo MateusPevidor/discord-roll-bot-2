@@ -1,4 +1,4 @@
-import converter from "hsl-to-rgb-for-reals";
+import converter from 'hsl-to-rgb-for-reals';
 
 const temperatureToColor = (temperature: number) => {
   function rgbToHex(r: number, g: number, b: number) {
@@ -12,4 +12,4 @@ const temperatureToColor = (temperature: number) => {
   return value;
 };
 
-export { temperatureToColor }
+export { temperatureToColor };

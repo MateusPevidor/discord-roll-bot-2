@@ -2,13 +2,10 @@ import { ChatInputCommandInteraction, Guild, GuildMember } from 'discord.js';
 import { ICommand } from '../interfaces/command';
 
 class RollCommand extends ICommand {
-
   constructor() {
     super('roll', 'Rolls between 1 and 100 (or the defined limit) inclusive.');
-    this.command.addIntegerOption(option => {
-      return option
-        .setName('limit')
-        .setDescription('Upper limit')
+    this.command.addIntegerOption((option) => {
+      return option.setName('limit').setDescription('Upper limit');
     });
   }
 

@@ -13,7 +13,11 @@ function generatePartitionsWithParts(n: number, parts: number[]): number[][] {
     }
   }
 
-  function generatePartitionHelper(target: number, max: number, current: number[]): void {
+  function generatePartitionHelper(
+    target: number,
+    max: number,
+    current: number[]
+  ): void {
     if (target === 0) {
       partitions.push([...current]);
       return;
@@ -33,9 +37,9 @@ function generatePartitionsWithParts(n: number, parts: number[]): number[][] {
 }
 
 function countOccurrences(partitions: number[][]): number[][] {
-  const occurences = partitions.map(partition => {
+  const occurences = partitions.map((partition) => {
     const countMap = new Map<number, number>();
-    partition.forEach(num => {
+    partition.forEach((num) => {
       countMap.set(num, (countMap.get(num) || 0) + 1);
     });
     return Array.from(countMap.values());
