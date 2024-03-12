@@ -8,6 +8,7 @@ import { RollCommand } from './commands/roll';
 import { TempCommand } from './commands/temp';
 import { MinecraftOddsCommand } from './commands/minecraftOdds';
 import { ICommand } from './interfaces/command';
+import { ConnectionCommand } from './commands/connection';
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
@@ -24,6 +25,7 @@ client.once(Events.ClientReady, (c) => {
   commands.roll = new RollCommand();
   commands.temp = new TempCommand();
   commands.mcodds = new MinecraftOddsCommand();
+  commands.connection = new ConnectionCommand();
 
   client.user?.setPresence({
     activities: [{ name: '/temp' }, { name: '/roll' }]
