@@ -5,4 +5,4 @@ import { RollBot } from './bot';
 import { Server } from './server';
 
 RollBot.create();
-Server.create(RollBot.client);
+Server.create();

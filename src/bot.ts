@@ -17,7 +17,7 @@ export abstract class RollBot {
     if (RollBot.client) return;
 
     RollBot.client = new Client({
-      intents: [GatewayIntentBits.Guilds]
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates]
     });
 
     const commands = {} as Commands;

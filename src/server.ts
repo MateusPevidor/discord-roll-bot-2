@@ -1,78 +1,72 @@
-import { Client } from 'discord.js';
-import Express from 'express';
+import Express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
+import { RollBot } from './bot';
+import { AppError } from './utils/AppError';
+import 'express-async-errors';
 
 export abstract class Server {
-  static create(discordjsClient: Client) {
+  static create() {
     const app = Express();
     const port = process.env.PORT || 3000;
 
     app.use(Express.json());
     app.use(cors());
 
-    app.post('/setMute', (req, res) => {
+    app.post('/setMute', async (req, res) => {
       const { guildId, userId, mute } = req.body;
 
       console.log(`guildId: ${guildId}, userId: ${userId}, mute: ${mute}`);
 
-      discordjsClient.guilds
-        .fetch(guildId)
-        .then((guild) => {
-          guild.members
-            .fetch(userId)
-            .then((member) => {
-              member.voice
-                .setDeaf(mute)
-                .then(() => {
-                  return res.status(200).send('OK');
-                })
-                .catch((err) => {
-                  console.error(err);
-                  return res.status(500).send('Could not mute member');
-                });
-            })
-            .catch((err) => {
-              console.error(err);
-              return res.status(404).send('Could not fetch member');
-            });
-        })
-        .catch((err) => {
-          console.error(err);
-          return res.status(404).send('Could not fetch guild');
-        });
+      const guild = await RollBot.client.guilds.fetch(guildId);
 
-      return res.status(200).send('OK');
+      if (!guild) {
+        throw new AppError('Guild not found', 404);
+      }
+
+      const member = await guild.members.fetch(userId);
+
+      if (!member) {
+        throw new AppError('Member not found', 404);
+      }
+
+      const muted = await member.voice.setDeaf(mute);
+
+      if (!muted) {
+        throw new AppError('Failed to mute member', 400);
+      }
+
+      return res.status(204).json();
     });
 
-    app.get('/setMute/status', (req, res) => {
+    app.get('/setMute/status', async (req, res) => {
       const { guildId, userId } = req.query as {
         guildId: string;
         userId: string;
       };
 
-      console.log(`guildId: ${guildId}, userId: ${userId}`);
+      const guild = await RollBot.client.guilds.fetch(guildId);
 
-      discordjsClient.guilds
-        .fetch(guildId)
-        .then((guild) => {
-          guild.members
-            .fetch(userId)
-            .then((member) => {
-              return res.status(200).json({
-                status: member.voice.deaf
-              });
-            })
-            .catch((err) => {
-              console.error(err);
-              return res.status(404).send('Could not fetch member');
-            });
-        })
-        .catch((err) => {
-          console.error(err);
-          return res.status(404).send('Could not fetch guild');
-        });
+      if (!guild) {
+        return res.status(404).send('Guild not found');
+      }
 
-      return res.status(500).send('Unknown error');
+      const member = await guild.members.fetch(userId);
+
+      if (!member) {
+        return res.status(404).send('Member not found');
+      }
+
+      return res.status(200).json({
+        status: member.voice.serverDeaf
+      });
+    });
+
+    app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+      if (err instanceof AppError) {
+        return res.status(err.statusCode).send(err.message);
+      }
+
+      res.status(500).send('Something went wrong!');
     });
 
     app.listen(port, () => {
