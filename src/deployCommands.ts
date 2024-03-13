@@ -7,6 +7,7 @@ import { PingCommand } from './commands/ping';
 import { RollCommand } from './commands/roll';
 import { TempCommand } from './commands/temp';
 import { MinecraftOddsCommand } from './commands/minecraftOdds';
+import { DiceOddsCommand } from './commands/diceOdds';
 import { ConnectionCommand } from './commands/connection';
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN || '');
@@ -19,6 +20,7 @@ const loadCommands = () => {
     new RollCommand(),
     new TempCommand(),
     new MinecraftOddsCommand(),
+    new DiceOddsCommand(),
     new ConnectionCommand()
   ].map(({ command }) => command.toJSON());
 

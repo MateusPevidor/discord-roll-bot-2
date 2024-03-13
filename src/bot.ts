@@ -5,6 +5,7 @@ import { RollCommand } from './commands/roll';
 import { TempCommand } from './commands/temp';
 import { MinecraftOddsCommand } from './commands/minecraftOdds';
 import { ConnectionCommand } from './commands/connection';
+import { DiceOddsCommand } from './commands/diceOdds';
 
 interface Commands {
   [id: string]: ICommand;
@@ -27,10 +28,15 @@ export abstract class RollBot {
       commands.roll = new RollCommand();
       commands.temp = new TempCommand();
       commands.mcodds = new MinecraftOddsCommand();
+      commands.diceodds = new DiceOddsCommand();
       commands.connection = new ConnectionCommand();
 
       RollBot.client.user?.setPresence({
-        activities: [{ name: '/temp' }, { name: '/roll' }]
+        activities: [
+          { name: '/temp' },
+          { name: '/roll' },
+          { name: '/diceodds' }
+        ]
       });
 
       console.log('Bot is online! ', c.user.tag);
