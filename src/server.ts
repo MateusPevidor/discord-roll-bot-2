@@ -15,8 +15,6 @@ export abstract class Server {
     app.post('/setMute', async (req, res) => {
       const { guildId, userId, mute } = req.body;
 
-      console.log(`guildId: ${guildId}, userId: ${userId}, mute: ${mute}`);
-
       const guild = await RollBot.client.guilds.fetch(guildId);
 
       if (!guild) {
