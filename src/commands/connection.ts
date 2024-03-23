@@ -24,7 +24,10 @@ class ConnectionCommand extends ICommand {
 
       const userId = interaction.user.id;
 
-      return interaction.reply(`${ipWords} ${userId}`);
+      return interaction.reply({
+        content: `${ipWords} ${userId}`,
+        ephemeral: true
+      });
     } catch (err) {
       console.log(err);
       return interaction.reply('Failed to retrieve connection code.');
