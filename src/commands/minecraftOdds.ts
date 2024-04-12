@@ -4,6 +4,8 @@ import { create as MathCreate, all as MathAll } from 'mathjs';
 import { MathJsChain, MathType, MathJsStatic, BigNumber } from 'mathjs';
 import { generateSequenceArray, integerPartition } from '../utils';
 
+import Logger from '../decorators/executionLogger';
+
 const barterData = {
   fireRes: {
     odds: 10 / 423,
@@ -199,6 +201,7 @@ class MinecraftOddsCommand extends ICommand {
     this.math = MathCreate(MathAll, { precision: 64, number: 'BigNumber' });
   }
 
+  @Logger
   async execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.member) {
       return interaction.reply(`Error`);

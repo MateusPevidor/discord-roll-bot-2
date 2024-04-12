@@ -3,13 +3,14 @@ import { ICommand } from '../interfaces/command';
 import MyIpApi, { MyIpResponse } from '../services/ipinfo';
 import { words } from '../utils/wordList';
 
-// Array of 255 positions with animal names
+import Logger from '../decorators/executionLogger';
 
 class ConnectionCommand extends ICommand {
   constructor() {
     super('connection', 'Retrieves connection code for the bot.');
   }
 
+  @Logger
   async execute(interaction: ChatInputCommandInteraction) {
     try {
       const response = await MyIpApi.get<MyIpResponse>('/');

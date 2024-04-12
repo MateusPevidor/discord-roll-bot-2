@@ -8,6 +8,8 @@ import { ICommand } from '../interfaces/command';
 import api from '../services/weatherApi';
 import { temperatureToColor } from '../utils';
 
+import Logger from '../decorators/executionLogger';
+
 class TempCommand extends ICommand {
   constructor() {
     super('temp', 'Shows the current temperature of a given city');
@@ -19,6 +21,7 @@ class TempCommand extends ICommand {
     });
   }
 
+  @Logger
   async execute(interaction: ChatInputCommandInteraction) {
     const city = interaction.options.getString('city');
 

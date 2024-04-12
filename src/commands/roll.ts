@@ -1,6 +1,8 @@
 import { ChatInputCommandInteraction } from 'discord.js';
 import { ICommand } from '../interfaces/command';
 
+import Logger from '../decorators/executionLogger';
+
 class RollCommand extends ICommand {
   constructor() {
     super('roll', 'Rolls between 1 and 100 (or the defined limit) inclusive.');
@@ -9,6 +11,7 @@ class RollCommand extends ICommand {
     });
   }
 
+  @Logger
   async execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.member) {
       return await interaction.reply(`Error`);
