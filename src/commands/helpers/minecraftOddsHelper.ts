@@ -68,7 +68,7 @@ export function calculateOdds(
       const iterationOdds = chain(1)
         .multiply(pow(bignumber(eventOdds), i))
         .multiply(pow(bignumber(1 - eventOdds), n - i))
-        .multiply(combinations(n, i));
+        .multiply(bignumber(combinations(n, i)));
       odds = odds.add(iterationOdds.done());
     }
     return format(odds.multiply(100).done(), {
@@ -81,7 +81,7 @@ export function calculateOdds(
       const iterationOdds = chain(1)
         .multiply(pow(bignumber(eventOdds), k + i))
         .multiply(pow(bignumber(1 - eventOdds), n - (k + i)))
-        .multiply(combinations(n, k + i));
+        .multiply(bignumber(combinations(n, k + i)));
       odds = odds.add(iterationOdds.done());
     }
     return format(odds.multiply(100).done(), {
@@ -92,7 +92,7 @@ export function calculateOdds(
     const odds = chain(100)
       .multiply(pow(bignumber(eventOdds), k))
       .multiply(pow(bignumber(1 - eventOdds), n - k))
-      .multiply(combinations(n, k))
+      .multiply(bignumber(combinations(n, k)))
       .done();
     return format(odds, { notation: 'fixed', precision: 10 });
   }
