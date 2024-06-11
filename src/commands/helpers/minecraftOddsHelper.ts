@@ -1,0 +1,226 @@
+import {
+  create as MathCreate,
+  all as MathAll,
+  MathJsChain,
+  MathType,
+  BigNumber
+} from 'mathjs';
+
+import { generateSequenceArray, integerPartition } from '../../utils';
+
+export const barterData = {
+  fireRes: {
+    odds: 10 / 423,
+    inverseOdds: 413 / 423,
+    amount: generateSequenceArray(1, 1),
+    name: 'Fire Resistance'
+  },
+  glowstone: {
+    odds: 5 / 846,
+    inverseOdds: 403 / 423,
+    amount: generateSequenceArray(5, 12),
+    name: 'Glowstone Dust'
+  },
+  pearl: {
+    odds: 4 / 423,
+    inverseOdds: 403 / 423,
+    amount: generateSequenceArray(4, 8),
+    name: 'Ender Pearl'
+  },
+  string: {
+    odds: 20 / 7191,
+    inverseOdds: 403 / 423,
+    amount: generateSequenceArray(8, 24),
+    name: 'String'
+  },
+  obsidian: {
+    odds: 40 / 423,
+    inverseOdds: 383 / 423,
+    amount: generateSequenceArray(1, 1),
+    name: 'Obsidian'
+  },
+  cryingObsidian: {
+    odds: 40 / 1269,
+    inverseOdds: 383 / 423,
+    amount: generateSequenceArray(1, 3),
+    name: 'Crying Obsidian'
+  }
+};
+
+export type Barter = keyof typeof barterData;
+
+export function calculateOdds(
+  n: number,
+  k: number,
+  eventOdds: number,
+  type: string
+) {
+  const { pow, combinations, chain, bignumber, format } = MathCreate(MathAll, {
+    precision: 64,
+    number: 'BigNumber'
+  });
+
+  if (k > n) throw new Error('k cannot be greater than n');
+
+  if (type === 'or_less') {
+    let odds = chain(0) as MathJsChain<MathType>;
+    for (let i = 0; i <= k; i++) {
+      const iterationOdds = chain(1)
+        .multiply(pow(bignumber(eventOdds), i))
+        .multiply(pow(bignumber(1 - eventOdds), n - i))
+        .multiply(combinations(n, i));
+      odds = odds.add(iterationOdds.done());
+    }
+    return format(odds.multiply(100).done(), { notation: 'fixed' });
+  } else if (type === 'or_more') {
+    let odds = chain(0) as MathJsChain<MathType>;
+    for (let i = 0; i < n - k + 1; i++) {
+      const iterationOdds = chain(1)
+        .multiply(pow(bignumber(eventOdds), k + i))
+        .multiply(pow(bignumber(1 - eventOdds), n - (k + i)))
+        .multiply(combinations(n, k + i));
+      odds = odds.add(iterationOdds.done());
+    }
+    return format(odds.multiply(100).done(), { notation: 'fixed' });
+  } else {
+    const odds = chain(100)
+      .multiply(pow(bignumber(eventOdds), k))
+      .multiply(pow(bignumber(1 - eventOdds), n - k))
+      .multiply(combinations(n, k))
+      .done();
+    return format(odds, { notation: 'fixed' });
+  }
+}
+
+export function barterOdds(
+  trades: number,
+  drops: number,
+  loot: Barter,
+  type: string
+) {
+  const barter = barterData[loot];
+
+  if (drops > trades * barter.amount.at(-1)!)
+    throw new Error('Drops cannot be greater than Trades');
+
+  const { pow, chain, bignumber, format, factorial, compare } = MathCreate(
+    MathAll,
+    {
+      precision: 64,
+      number: 'BigNumber'
+    }
+  );
+
+  let approximate = false;
+
+  const factorialTable: BigNumber[] = [];
+  function getFactorial(n: number) {
+    if (n in factorialTable) {
+      return factorialTable[n];
+    } else {
+      const result = factorial<BigNumber>(bignumber(n));
+      factorialTable[n] = result;
+      return result;
+    }
+  }
+
+  const roundsTable: Map<string, MathType> = new Map<string, MathType>();
+  function getRound(numbers: number[]) {
+    const key = numbers.sort().join(',');
+    if (roundsTable.has(key)) {
+      return roundsTable.get(key)!;
+    } else {
+      const roundSum = numbers.reduce((acc, curr) => acc + curr, 0);
+
+      if (trades - roundSum < 0) return 0;
+
+      let coefficient = chain(1)
+        .multiply(getFactorial(trades))
+        .divide(getFactorial(trades - roundSum));
+
+      for (const repetition of numbers) {
+        coefficient = coefficient.divide(getFactorial(repetition));
+      }
+
+      const iterationOdds = chain(1)
+        .multiply(pow(bignumber(barter.odds), roundSum))
+        .multiply(pow(bignumber(barter.inverseOdds), trades - roundSum))
+        .multiply(coefficient.done())
+        .done();
+
+      roundsTable.set(key, iterationOdds);
+
+      return iterationOdds;
+    }
+  }
+
+  if (type === 'or_less') {
+    let odds = chain(0) as MathJsChain<MathType>;
+    for (let i = 0; i <= drops; i++) {
+      const rounds = integerPartition(i, barter.amount);
+
+      if (rounds.length > 200000) {
+        approximate = true;
+        break;
+      }
+
+      let roundOdds: MathType = 0;
+      for (const round of rounds) {
+        roundOdds = getRound(round);
+        odds = odds.add(roundOdds);
+      }
+      if (compare(roundOdds, bignumber(1e-20)) == -1 && rounds.length > 1) {
+        approximate = true;
+        break;
+      }
+    }
+    return {
+      odds: format(odds.multiply(100).done(), {
+        notation: 'fixed',
+        precision: 10
+      }),
+      approximate
+    };
+  } else if (type === 'or_more') {
+    let odds = chain(1) as MathJsChain<MathType>;
+    for (let i = 0; i <= drops - 1; i++) {
+      const rounds = integerPartition(i, barter.amount);
+
+      if (rounds.length > 200000) {
+        approximate = true;
+        break;
+      }
+
+      let roundOdds: MathType = 0;
+      for (const round of rounds) {
+        roundOdds = getRound(round);
+        odds = odds.subtract(roundOdds);
+      }
+      if (compare(roundOdds, bignumber(1e-20)) == -1 && rounds.length > 1) {
+        approximate = true;
+        break;
+      }
+    }
+    return {
+      odds: format(odds.multiply(100).done(), {
+        notation: 'fixed',
+        precision: 10
+      }),
+      approximate
+    };
+  } else {
+    let odds = chain(0) as MathJsChain<MathType>;
+    const rounds = integerPartition(drops, barter.amount);
+
+    for (const round of rounds) {
+      odds = odds.add(getRound(round));
+    }
+    return {
+      odds: format(odds.multiply(100).done(), {
+        notation: 'fixed',
+        precision: 10
+      }),
+      approximate
+    };
+  }
+}

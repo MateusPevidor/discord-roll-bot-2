@@ -1,13 +1,11 @@
 import { ChatInputCommandInteraction } from 'discord.js';
 import { ICommand } from '../interfaces/command';
-import { MathJsChain, MathJsStatic, MathType } from 'mathjs';
-import { create as MathCreate, all as MathAll } from 'mathjs';
+
+import { calculateOdds } from './helpers/diceOddsHelper';
 
 import Logger from '../decorators/executionLogger';
 
 class DiceOddsCommand extends ICommand {
-  math: MathJsStatic;
-
   constructor() {
     super('diceodds', 'Calculates the odds of rolling dice.');
     this.command.addIntegerOption((option) => {
@@ -23,8 +21,6 @@ class DiceOddsCommand extends ICommand {
         .setDescription('Number of hits')
         .setRequired(true);
     });
-
-    this.math = MathCreate(MathAll, { precision: 64, number: 'BigNumber' });
   }
 
   @Logger
@@ -39,26 +35,11 @@ class DiceOddsCommand extends ICommand {
       return await interaction.reply(`Error`);
     }
 
-    const odds = this.calculateOdds(faces, hitCount);
+    const odds = calculateOdds(faces, hitCount);
 
     return await interaction.reply(
       `<@${interaction.user.id}> Odds of hitting a specific value ${hitCount} times on a d${faces}: ${odds}%`
     );
-  }
-
-  calculateOdds(faces: number, hits: number) {
-    const { chain, bignumber, format } = this.math;
-
-    let odds = chain(bignumber(1)) as MathJsChain<MathType>;
-
-    for (let i = 0; i < hits; i++) {
-      odds = odds.divide(bignumber(faces));
-    }
-
-    return format(odds.multiply(100).done(), {
-      notation: 'fixed',
-      precision: 10
-    });
   }
 }
 
