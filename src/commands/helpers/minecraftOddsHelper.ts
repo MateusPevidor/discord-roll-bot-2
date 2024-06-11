@@ -60,7 +60,7 @@ export function calculateOdds(
     number: 'BigNumber'
   });
 
-  if (k > n) throw new Error('k cannot be greater than n');
+  if (k > n) throw new Error('Drops cannot be the greatest value');
 
   if (type === 'or_less') {
     let odds = chain(0) as MathJsChain<MathType>;
@@ -88,7 +88,7 @@ export function calculateOdds(
       .multiply(pow(bignumber(1 - eventOdds), n - k))
       .multiply(combinations(n, k))
       .done();
-    return format(odds, { notation: 'fixed' });
+    return format(odds, { notation: 'fixed', precision: 10 });
   }
 }
 
