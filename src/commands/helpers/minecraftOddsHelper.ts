@@ -71,7 +71,10 @@ export function calculateOdds(
         .multiply(combinations(n, i));
       odds = odds.add(iterationOdds.done());
     }
-    return format(odds.multiply(100).done(), { notation: 'fixed' });
+    return format(odds.multiply(100).done(), {
+      notation: 'fixed',
+      precision: 10
+    });
   } else if (type === 'or_more') {
     let odds = chain(0) as MathJsChain<MathType>;
     for (let i = 0; i < n - k + 1; i++) {
@@ -81,7 +84,10 @@ export function calculateOdds(
         .multiply(combinations(n, k + i));
       odds = odds.add(iterationOdds.done());
     }
-    return format(odds.multiply(100).done(), { notation: 'fixed' });
+    return format(odds.multiply(100).done(), {
+      notation: 'fixed',
+      precision: 10
+    });
   } else {
     const odds = chain(100)
       .multiply(pow(bignumber(eventOdds), k))
