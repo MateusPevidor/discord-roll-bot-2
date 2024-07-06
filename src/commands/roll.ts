@@ -13,7 +13,8 @@ class RollCommand extends ICommand {
 
   @Logger
   async execute(interaction: ChatInputCommandInteraction) {
-    if (!interaction.member) {
+    console.log(interaction);
+    if (!interaction.user) {
       return await interaction.reply(`Error`);
     }
     const limit = interaction.options.getInteger('limit') || 100;

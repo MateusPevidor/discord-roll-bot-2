@@ -37,7 +37,7 @@ class TempCommand extends ICommand {
       const icon = response.data.weather[0].icon;
 
       const nickname =
-        (interaction.member as GuildMember).nickname ||
+        (interaction.member as GuildMember)?.nickname ||
         interaction.user.username;
 
       const embed = new EmbedBuilder()

@@ -22,7 +22,11 @@ const loadCommands = () => {
     new MinecraftOddsCommand(),
     new DiceOddsCommand(),
     new ConnectionCommand()
-  ].map(({ command }) => command.toJSON());
+  ].map(({ command }) => ({
+    integration_types: [0, 1],
+    contexts: [0, 1, 2],
+    ...command.toJSON()
+  }));
 
   commands.push(..._commands);
 };

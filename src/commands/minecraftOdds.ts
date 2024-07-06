@@ -161,7 +161,7 @@ class MinecraftOddsCommand extends ICommand {
 
   @Logger
   async execute(interaction: ChatInputCommandInteraction) {
-    if (!interaction.member) {
+    if (!interaction.user) {
       return interaction.reply(`Error`);
     }
 
