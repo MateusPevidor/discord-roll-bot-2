@@ -88,6 +88,14 @@ export function calculateOdds(
       notation: 'fixed',
       precision: 10
     });
+  } else if (type === 'ends_at') {
+    const odds = chain(100)
+      .multiply(pow(bignumber(eventOdds), k - 1))
+      .multiply(pow(bignumber(1 - eventOdds), n - k))
+      .multiply(bignumber(combinations(n - 1, k - 1)))
+      .multiply(eventOdds)
+      .done();
+    return format(odds, { notation: 'fixed', precision: 10 });
   } else {
     const odds = chain(100)
       .multiply(pow(bignumber(eventOdds), k))

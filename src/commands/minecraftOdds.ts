@@ -10,6 +10,23 @@ import {
 
 import Logger from '../decorators/executionLogger';
 
+function getNumberSuffix(n: number) {
+  if (n >= 11 && n <= 13) {
+    return 'th';
+  }
+
+  switch (n % 10) {
+    case 1:
+      return 'st';
+    case 2:
+      return 'nd';
+    case 3:
+      return 'rd';
+    default:
+      return 'th';
+  }
+}
+
 class MinecraftOddsCommand extends ICommand {
   constructor() {
     super('mcodds', 'Calculates the odds of an event happening');
@@ -77,7 +94,8 @@ class MinecraftOddsCommand extends ICommand {
               .addChoices(
                 { name: 'x or less', value: 'or_less' },
                 { name: 'x or more', value: 'or_more' },
-                { name: 'Exactly x', value: 'exact' }
+                { name: 'Exactly x', value: 'exact' },
+                { name: 'Ends at x', value: 'ends_at' }
               );
           });
       })
@@ -109,7 +127,8 @@ class MinecraftOddsCommand extends ICommand {
               .addChoices(
                 { name: 'x or less', value: 'or_less' },
                 { name: 'x or more', value: 'or_more' },
-                { name: 'Exactly x', value: 'exact' }
+                { name: 'Exactly x', value: 'exact' },
+                { name: 'Ends at x', value: 'ends_at' }
               );
           });
       })
@@ -150,6 +169,7 @@ class MinecraftOddsCommand extends ICommand {
                 { name: 'x or more', value: 'or_more' },
                 { name: 'Exactly x', value: 'exact' }
               );
+            // TODO: Add 'ends_at' option
           });
       });
 
@@ -217,6 +237,14 @@ class MinecraftOddsCommand extends ICommand {
         return await interaction.reply(
           `<@${interaction.user.id}> Odds of dropping ${rods} or more rods from ${kills} blazes: ${result}%`
         );
+      } else if (countType === 'ends_at') {
+        return await interaction.reply(
+          `<@${
+            interaction.user.id
+          }> Odds of getting the ${rods}${getNumberSuffix(
+            rods
+          )} rod after ${kills} blazes: ${result}%`
+        );
       } else {
         return await interaction.reply(
           `<@${interaction.user.id}> Odds of dropping exactly ${rods} rods from ${kills} blazes: ${result}%`
@@ -243,6 +271,14 @@ class MinecraftOddsCommand extends ICommand {
       } else if (countType === 'or_more') {
         return await interaction.reply(
           `<@${interaction.user.id}> Odds of dropping ${flints} or more flints from ${gravels} gravels: ${result}%`
+        );
+      } else if (countType === 'ends_at') {
+        return await interaction.reply(
+          `<@${
+            interaction.user.id
+          }> Odds of getting the ${flints}${getNumberSuffix(
+            flints
+          )} rod after ${gravels} blazes: ${result}%`
         );
       } else {
         return await interaction.reply(
