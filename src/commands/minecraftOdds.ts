@@ -278,7 +278,7 @@ class MinecraftOddsCommand extends ICommand {
             interaction.user.id
           }> Odds of getting the ${flints}${getNumberSuffix(
             flints
-          )} rod after ${gravels} blazes: ${result}%`
+          )} flint after ${gravels} gravels: ${result}%`
         );
       } else {
         return await interaction.reply(
