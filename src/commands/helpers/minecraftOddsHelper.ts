@@ -139,18 +139,18 @@ export function barterOdds(
   }
 
   const roundsTable: Map<string, MathType> = new Map<string, MathType>();
-  function getRound(numbers: number[]) {
+  function getRound(numbers: number[], _trades: number = trades) {
     const key = numbers.sort().join(',');
     if (roundsTable.has(key)) {
       return roundsTable.get(key)!;
     } else {
       const roundSum = numbers.reduce((acc, curr) => acc + curr, 0);
 
-      if (trades - roundSum < 0) return 0;
+      if (_trades - roundSum < 0) return 0;
 
       let coefficient = chain(1)
-        .multiply(getFactorial(trades))
-        .divide(getFactorial(trades - roundSum));
+        .multiply(getFactorial(_trades))
+        .divide(getFactorial(_trades - roundSum));
 
       for (const repetition of numbers) {
         coefficient = coefficient.divide(getFactorial(repetition));
@@ -158,7 +158,7 @@ export function barterOdds(
 
       const iterationOdds = chain(1)
         .multiply(pow(bignumber(barter.odds), roundSum))
-        .multiply(pow(bignumber(barter.inverseOdds), trades - roundSum))
+        .multiply(pow(bignumber(barter.inverseOdds), _trades - roundSum))
         .multiply(coefficient.done())
         .done();
 
@@ -217,6 +217,39 @@ export function barterOdds(
     }
     return {
       odds: format(odds.multiply(100).done(), {
+        notation: 'fixed',
+        precision: 10
+      }),
+      approximate
+    };
+  } else if (type === 'ends_at') {
+    let totalOdds = chain(0) as MathJsChain<MathType>;
+
+    const min = barter.amount.at(0)!;
+    const max = barter.amount.at(-1)!;
+
+    for (let i = drops - max; i < drops; i++) {
+      for (let j = drops - i; j <= max; j++) {
+        if (j < min) continue;
+
+        let odds = chain(0) as MathJsChain<MathType>;
+        const rounds = integerPartition(i, barter.amount);
+
+        for (const round of rounds) {
+          odds = odds.add(getRound(round, trades - 1));
+        }
+
+        const iterationOdds = chain(1)
+          .multiply(odds.done())
+          .multiply(bignumber(barter.odds / barter.amount.length))
+          .done();
+
+        totalOdds = totalOdds.add(iterationOdds);
+      }
+    }
+
+    return {
+      odds: format(totalOdds.multiply(100).done(), {
         notation: 'fixed',
         precision: 10
       }),

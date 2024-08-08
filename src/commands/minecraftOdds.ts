@@ -167,7 +167,8 @@ class MinecraftOddsCommand extends ICommand {
               .addChoices(
                 { name: 'x or less', value: 'or_less' },
                 { name: 'x or more', value: 'or_more' },
-                { name: 'Exactly x', value: 'exact' }
+                { name: 'Exactly x', value: 'exact' },
+                { name: 'Ends at x', value: 'ends_at' }
               );
             // TODO: Add 'ends_at' option
           });
@@ -243,7 +244,7 @@ class MinecraftOddsCommand extends ICommand {
             interaction.user.id
           }> Odds of getting the ${rods}${getNumberSuffix(
             rods
-          )} rod after ${kills} blazes: ${result}%`
+          )} rod at the ${kills}${getNumberSuffix(kills)} blaze: ${result}%`
         );
       } else {
         return await interaction.reply(
@@ -278,7 +279,9 @@ class MinecraftOddsCommand extends ICommand {
             interaction.user.id
           }> Odds of getting the ${flints}${getNumberSuffix(
             flints
-          )} flint after ${gravels} gravels: ${result}%`
+          )} flint at the ${gravels}${getNumberSuffix(
+            gravels
+          )} gravel: ${result}%`
         );
       } else {
         return await interaction.reply(
@@ -318,6 +321,16 @@ class MinecraftOddsCommand extends ICommand {
           `<@${interaction.user.id}> Odds of dropping ${dropCount} or more ${
             barter.name
           } from ${trades} trades: ${result.odds}%${
+            result.approximate ? ' (Approximate)' : ''
+          }`
+        );
+      } else if (countType === 'ends_at') {
+        return await interaction.editReply(
+          `<@${
+            interaction.user.id
+          }> Odds of getting the ${dropCount}${getNumberSuffix(dropCount)} ${
+            barter.name
+          } at the ${trades}${getNumberSuffix(trades)} trade: ${result.odds}%${
             result.approximate ? ' (Approximate)' : ''
           }`
         );
