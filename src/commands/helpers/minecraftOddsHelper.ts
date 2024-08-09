@@ -115,7 +115,10 @@ export function barterOdds(
   const barter = barterData[loot];
 
   if (drops > trades * barter.amount.at(-1)!)
-    throw new Error('Drops cannot be greater than Trades');
+    throw new Error(
+      'Drops cannot be greater than Trades. Maximum drops: ' +
+        trades * barter.amount.at(-1)!
+    );
 
   const { pow, chain, bignumber, format, factorial, compare } = MathCreate(
     MathAll,
@@ -241,7 +244,7 @@ export function barterOdds(
 
         const iterationOdds = chain(1)
           .multiply(odds.done())
-          .multiply(bignumber(barter.odds / barter.amount.length))
+          .multiply(bignumber(barter.odds))
           .done();
 
         totalOdds = totalOdds.add(iterationOdds);
