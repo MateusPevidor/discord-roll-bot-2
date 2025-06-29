@@ -1,12 +1,14 @@
 import { calculateOdds } from './common/odds-core';
-import { getNumberSuffix } from '../../../shared/utils/number-suffix';
+import { getNumberSuffix } from '@/shared/utils/number-suffix';
+
+const BLAZE_ROD_DROP_RATE = 0.5;
 
 export function calculateBlazeOdds(
   kills: number,
   rods: number,
   type: string
 ): string {
-  const result = calculateOdds(kills, rods, 0.5, type);
+  const result = calculateOdds(kills, rods, BLAZE_ROD_DROP_RATE, type);
 
   switch (type) {
     case 'or_less':

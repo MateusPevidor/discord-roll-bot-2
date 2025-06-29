@@ -6,10 +6,7 @@ import {
   BigNumber
 } from 'mathjs';
 
-import {
-  generateSequenceArray,
-  integerPartition
-} from '../../../../shared/utils';
+import { generateSequenceArray, integerPartition } from '@/shared/utils';
 
 export const barterData = {
   fireRes: {

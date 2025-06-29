@@ -1,12 +1,14 @@
 import { calculateOdds } from './common/odds-core';
-import { getNumberSuffix } from '../../../shared/utils/number-suffix';
+import { getNumberSuffix } from '@/shared/utils/number-suffix';
+
+const FLINT_DROP_RATE = 0.1;
 
 export function calculateFlintOdds(
   gravels: number,
   flints: number,
   type: string
 ): string {
-  const result = calculateOdds(gravels, flints, 0.1, type);
+  const result = calculateOdds(gravels, flints, FLINT_DROP_RATE, type);
 
   switch (type) {
     case 'or_less':

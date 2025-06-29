@@ -1,8 +1,8 @@
 import {
   fetchTemperature,
   TemperatureInfo
-} from '../../../../src/bot/domain/general/fetch-temperature';
-import api from '../../../../src/bot/services/weather-api';
+} from '@/bot/domain/general/fetch-temperature';
+import api from '@/bot/services/weather-api';
 
 // Mock the weather API
 jest.mock('../../../../src/bot/services/weather-api');

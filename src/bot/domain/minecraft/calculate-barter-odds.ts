@@ -1,5 +1,5 @@
 import { barterData, Barter, barterOdds } from './common/odds-core';
-import { getNumberSuffix } from '../../../shared/utils/number-suffix';
+import { getNumberSuffix } from '@/shared/utils/number-suffix';
 
 export function calculateBarterOdds(
   trades: number,

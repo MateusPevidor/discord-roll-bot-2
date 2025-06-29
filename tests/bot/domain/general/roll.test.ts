@@ -1,4 +1,4 @@
-import { roll } from '../../../../src/bot/domain/general/roll';
+import { roll } from '@/bot/domain/general/roll';
 
 describe('roll', () => {
   let mockMathRandom: jest.SpyInstance;

@@ -1,6 +1,6 @@
 import { EmbedBuilder, User } from 'discord.js';
 import { TemperatureInfo } from '../../domain/general/fetch-temperature';
-import { temperatureToColor } from '../../../shared/utils/temperature-to-color';
+import { temperatureToColor } from '@/shared/utils/temperature-to-color';
 
 export function buildTemperatureEmbed(
   data: TemperatureInfo,

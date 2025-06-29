@@ -1,7 +1,10 @@
 import { calculateOdds } from './common/odds-core';
 
+const EYE_SPAWN_RATE = 0.1;
+const MAX_EYES = 12;
+
 export function calculateEyeOdds(count: number, type: string): string {
-  const result = calculateOdds(12, count, 0.1, type);
+  const result = calculateOdds(MAX_EYES, count, EYE_SPAWN_RATE, type);
 
   switch (type) {
     case 'or_less':

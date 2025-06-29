@@ -1,4 +1,4 @@
-import { calculateDiceOdds } from '../../../../src/bot/domain/general/calculate-dice-odds';
+import { calculateDiceOdds } from '@/bot/domain/general/calculate-dice-odds';
 
 describe('calculateDiceOdds', () => {
   describe('Basic functionality', () => {

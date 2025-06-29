@@ -1,5 +1,5 @@
-import MyIpApi, { MyIpResponse } from '../../../shared/services/ipinfo';
-import { words } from '../../../shared/utils/word-list';
+import MyIpApi, { MyIpResponse } from '@/shared/services/ipinfo';
+import { words } from '@/shared/utils/word-list';
 
 export async function generateConnectionCode(userId: string): Promise<string> {
   const response = await MyIpApi.get<MyIpResponse>('/');
