@@ -3,7 +3,7 @@ import cors from 'cors';
 
 import Routes from './routes';
 
-import { AppError } from '../shared/utils/AppError';
+import { AppError } from '../shared/utils/app-error';
 import 'express-async-errors';
 
 export abstract class Server {

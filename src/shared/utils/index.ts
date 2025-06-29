@@ -1,3 +1,3 @@
-export * from './temperatureToColor';
-export * from './integerPartition';
-export * from './generateSequenceArray';
+export * from './temperature-to-color';
+export * from './integer-partition';
+export * from './generate-sequence-array';
