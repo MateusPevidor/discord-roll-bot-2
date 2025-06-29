@@ -46,6 +46,15 @@ class MinecraftOddsCommand extends ICommand {
                 { name: 'x or more', value: 'or_more' },
                 { name: 'Exactly x', value: 'exact' }
               );
+          })
+          .addStringOption((option) => {
+            return option
+              .setName('compare')
+              .setDescription('Compare against bottom% or top% of odds')
+              .addChoices(
+                { name: 'Bottom %', value: 'bottom' },
+                { name: 'Top %', value: 'top' }
+              );
           });
       })
       .addSubcommand((subcommand) => {
@@ -79,6 +88,15 @@ class MinecraftOddsCommand extends ICommand {
                 { name: 'Exactly x', value: 'exact' },
                 { name: 'Ends at x', value: 'ends_at' }
               );
+          })
+          .addStringOption((option) => {
+            return option
+              .setName('compare')
+              .setDescription('Compare against bottom% or top% of odds')
+              .addChoices(
+                { name: 'Bottom %', value: 'bottom' },
+                { name: 'Top %', value: 'top' }
+              );
           });
       })
       .addSubcommand((subcommand) => {
@@ -111,6 +129,15 @@ class MinecraftOddsCommand extends ICommand {
                 { name: 'x or more', value: 'or_more' },
                 { name: 'Exactly x', value: 'exact' },
                 { name: 'Ends at x', value: 'ends_at' }
+              );
+          })
+          .addStringOption((option) => {
+            return option
+              .setName('compare')
+              .setDescription('Compare against bottom% or top% of odds')
+              .addChoices(
+                { name: 'Bottom %', value: 'bottom' },
+                { name: 'Top %', value: 'top' }
               );
           });
       })
@@ -178,9 +205,27 @@ class MinecraftOddsCommand extends ICommand {
     try {
       const count = interaction.options.getInteger('count')!;
       const type = interaction.options.getString('type')!;
-      const message = calculateEyeOdds(count, type);
-      return await interaction.reply(`<@${interaction.user.id}> ${message}`);
+      const compare = interaction.options.getString('compare');
+
+      const result = await calculateEyeOdds(count, type, compare);
+
+      const replyOptions: any = {
+        content: `<@${interaction.user.id}> ${result.message}`
+      };
+
+      // If a chart was generated, attach it
+      if (result.chartPath) {
+        const { AttachmentBuilder } = await import('discord.js');
+        replyOptions.files = [
+          new AttachmentBuilder(result.chartPath, {
+            name: 'eye-odds-chart.png'
+          })
+        ];
+      }
+
+      return await interaction.reply(replyOptions);
     } catch (err) {
+      console.error('Error calculating eye odds:', err);
       return await interaction.reply('Erro ao calcular odds dos olhos.');
     }
   }
@@ -190,9 +235,27 @@ class MinecraftOddsCommand extends ICommand {
       const kills = interaction.options.getInteger('kills')!;
       const rods = interaction.options.getInteger('rods')!;
       const type = interaction.options.getString('type')!;
-      const message = calculateBlazeOdds(kills, rods, type);
-      return await interaction.reply(`<@${interaction.user.id}> ${message}`);
+      const compare = interaction.options.getString('compare');
+
+      const result = await calculateBlazeOdds(kills, rods, type, compare);
+
+      const replyOptions: any = {
+        // content: `<@${interaction.user.id}> ${result.message}`
+      };
+
+      // If a chart was generated, attach it
+      if (result.chartPath) {
+        const { AttachmentBuilder } = await import('discord.js');
+        replyOptions.files = [
+          new AttachmentBuilder(result.chartPath, {
+            name: 'blaze-odds-chart.png'
+          })
+        ];
+      }
+
+      return await interaction.reply(replyOptions);
     } catch (err) {
+      console.error('Error calculating blaze odds:', err);
       return await interaction.reply('Erro ao calcular odds dos blazes.');
     }
   }
@@ -202,9 +265,27 @@ class MinecraftOddsCommand extends ICommand {
       const gravels = interaction.options.getInteger('gravels')!;
       const flints = interaction.options.getInteger('flints')!;
       const type = interaction.options.getString('type')!;
-      const message = calculateFlintOdds(gravels, flints, type);
-      return await interaction.reply(`<@${interaction.user.id}> ${message}`);
+      const compare = interaction.options.getString('compare');
+
+      const result = await calculateFlintOdds(gravels, flints, type, compare);
+
+      const replyOptions: any = {
+        content: `<@${interaction.user.id}> ${result.message}`
+      };
+
+      // If a chart was generated, attach it
+      if (result.chartPath) {
+        const { AttachmentBuilder } = await import('discord.js');
+        replyOptions.files = [
+          new AttachmentBuilder(result.chartPath, {
+            name: 'flint-odds-chart.png'
+          })
+        ];
+      }
+
+      return await interaction.reply(replyOptions);
     } catch (err) {
+      console.error('Error calculating flint odds:', err);
       return await interaction.reply('Erro ao calcular odds dos flints.');
     }
   }

@@ -70,3 +70,6 @@ jspm_packages/
 dist/
 build/
 out/
+
+# Generated charts
+charts/

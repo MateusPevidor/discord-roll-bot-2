@@ -53,7 +53,8 @@ export function calculateOdds(
   n: number,
   k: number,
   eventOdds: number,
-  type: string
+  type: string,
+  formatResult: boolean = true
 ) {
   const { pow, combinations, chain, bignumber, format } = MathCreate(MathAll, {
     precision: 64,
@@ -71,6 +72,7 @@ export function calculateOdds(
         .multiply(bignumber(combinations(n, i)));
       odds = odds.add(iterationOdds.done());
     }
+    if (!formatResult) return odds.multiply(100);
     return format(odds.multiply(100).done(), {
       notation: 'fixed',
       precision: 10
@@ -84,6 +86,7 @@ export function calculateOdds(
         .multiply(bignumber(combinations(n, k + i)));
       odds = odds.add(iterationOdds.done());
     }
+    if (!formatResult) return odds.multiply(100);
     return format(odds.multiply(100).done(), {
       notation: 'fixed',
       precision: 10
@@ -93,17 +96,62 @@ export function calculateOdds(
       .multiply(pow(bignumber(eventOdds), k - 1))
       .multiply(pow(bignumber(1 - eventOdds), n - k))
       .multiply(bignumber(combinations(n - 1, k - 1)))
-      .multiply(eventOdds)
-      .done();
-    return format(odds, { notation: 'fixed', precision: 10 });
+      .multiply(eventOdds);
+    if (!formatResult) return odds;
+    return format(odds.done(), { notation: 'fixed', precision: 10 });
   } else {
     const odds = chain(100)
       .multiply(pow(bignumber(eventOdds), k))
       .multiply(pow(bignumber(1 - eventOdds), n - k))
-      .multiply(bignumber(combinations(n, k)))
-      .done();
-    return format(odds, { notation: 'fixed', precision: 10 });
+      .multiply(bignumber(combinations(n, k)));
+    if (!formatResult) return odds;
+    return format(odds.done(), { notation: 'fixed', precision: 10 });
   }
+}
+
+export function calculateOddsForCompare(
+  n: number,
+  k: number,
+  eventOdds: number,
+  type: string
+) {
+  const { bignumber, sum } = MathCreate(MathAll, {
+    precision: 64,
+    number: 'BigNumber'
+  });
+
+  const entries = [];
+  let i = k;
+  while (true && i <= n * 4) {
+    const odds = calculateOdds(
+      i,
+      k,
+      eventOdds,
+      type,
+      false
+    ) as MathJsChain<MathType>;
+    entries.push({ i, odds });
+
+    if (odds.smaller(0.001).done()) break;
+
+    i++;
+  }
+
+  const values = entries.map((entry) => bignumber(entry.odds.done() as any));
+  const topOdds = values.slice(0, n - k + 1);
+
+  const total = sum(values);
+  const top = (sum(topOdds) / total) * 100;
+  const bottom = 100 - top;
+
+  const odds = entries.map((entry) => {
+    return {
+      i: entry.i,
+      odds: bignumber(entry.odds.done() as any)
+    };
+  });
+
+  return { top, bottom, odds };
 }
 
 export function barterOdds(
