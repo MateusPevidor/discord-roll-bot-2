@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "deploy-commands": "ts-node src/deployCommands.ts",
+    "deploy-commands": "ts-node src/bot/deploy-commands.ts",
     "start": "ts-node src/index.ts",
-    "test": "ts-node test.ts"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +18,10 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/hsl-to-rgb-for-reals": "^1.1.0",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.3",
     "nodemon": "^2.0.22",
+    "ts-jest": "^29.4.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {

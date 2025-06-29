@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction } from 'discord.js';
 import { ICommand } from '../interfaces/command';
 
-import Logger from '../decorators/executionLogger';
+import Logger from '../decorators/execution-logger';
 
 class PingCommand extends ICommand {
   constructor() {

@@ -1,5 +1,5 @@
-import { RollBot } from '../../bot';
-import { AppError } from '../../utils/AppError';
+import { RollBot } from '../../bot/bot';
+import { AppError } from '../../shared/utils/AppError';
 import { Request, Response } from 'express';
 
 export const SetMute = async (req: Request, res: Response) => {

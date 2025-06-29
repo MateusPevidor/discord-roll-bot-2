@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { SetMute, SetMuteStatus } from './routes/set-mute.route';
+import { SetMute, SetMuteStatus } from './set-mute.route';
 
 const router = Router();
 

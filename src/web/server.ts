@@ -1,15 +1,15 @@
 import Express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 
-import Routes from './http';
+import Routes from './routes';
 
-import { AppError } from './utils/AppError';
+import { AppError } from '../shared/utils/AppError';
 import 'express-async-errors';
 
 export abstract class Server {
   static create() {
     const app = Express();
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 3002;
 
     app.use(Express.json());
     app.use(cors());

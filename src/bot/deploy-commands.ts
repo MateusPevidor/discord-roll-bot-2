@@ -6,8 +6,8 @@ import { REST, Routes } from 'discord.js';
 import { PingCommand } from './commands/ping';
 import { RollCommand } from './commands/roll';
 import { TempCommand } from './commands/temp';
-import { MinecraftOddsCommand } from './commands/minecraftOdds';
-import { DiceOddsCommand } from './commands/diceOdds';
+import { MinecraftOddsCommand } from './commands/minecraft-odds';
+import { DiceOddsCommand } from './commands/dice-odds';
 import { ConnectionCommand } from './commands/connection';
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN || '');

@@ -21,7 +21,7 @@ export default function logExecution(
     console.log(executionString);
 
     fs.appendFileSync(
-      path.resolve(__dirname, '../../logs/execution.log'),
+      path.resolve(__dirname, '../../../logs/execution.log'),
       executionString + '\n'
     );
 

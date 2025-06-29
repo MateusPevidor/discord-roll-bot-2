@@ -3,9 +3,9 @@ import { ICommand } from './interfaces/command';
 import { PingCommand } from './commands/ping';
 import { RollCommand } from './commands/roll';
 import { TempCommand } from './commands/temp';
-import { MinecraftOddsCommand } from './commands/minecraftOdds';
+import { MinecraftOddsCommand } from './commands/minecraft-odds';
 import { ConnectionCommand } from './commands/connection';
-import { DiceOddsCommand } from './commands/diceOdds';
+import { DiceOddsCommand } from './commands/dice-odds';
 
 interface Commands {
   [id: string]: ICommand;
@@ -18,7 +18,12 @@ export abstract class RollBot {
     if (RollBot.client) return;
 
     RollBot.client = new Client({
-      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates]
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMessages
+      ]
     });
 
     const commands = {} as Commands;
@@ -35,7 +40,8 @@ export abstract class RollBot {
         activities: [
           { name: '/temp' },
           { name: '/roll' },
-          { name: '/diceodds' }
+          { name: '/diceodds' },
+          { name: '/mcodds' }
         ]
       });
 

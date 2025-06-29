@@ -5,7 +5,7 @@ import {
   MathType
 } from 'mathjs';
 
-export function calculateOdds(faces: number, hits: number) {
+export function calculateDiceOdds(faces: number, hits: number): string {
   const { chain, bignumber, format } = MathCreate(MathAll, {
     precision: 64,
     number: 'BigNumber'
