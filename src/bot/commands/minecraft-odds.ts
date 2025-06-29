@@ -179,14 +179,13 @@ class MinecraftOddsCommand extends ICommand {
                 { name: 'Exactly x', value: 'exact' },
                 { name: 'Ends at x', value: 'ends_at' }
               );
-            // TODO: Add 'ends_at' option
           });
       });
 
-    this.subCommandMap.eye = this.eyeCommand.bind(this);
-    this.subCommandMap.blaze = this.blazeCommand.bind(this);
-    this.subCommandMap.flint = this.flintCommand.bind(this);
-    this.subCommandMap.barter = this.barterCommand.bind(this);
+    this.subCommandMap.eye = this.eyeCommand.bind(this) as any;
+    this.subCommandMap.blaze = this.blazeCommand.bind(this) as any;
+    this.subCommandMap.flint = this.flintCommand.bind(this) as any;
+    this.subCommandMap.barter = this.barterCommand.bind(this) as any;
   }
 
   @Logger
@@ -207,6 +206,8 @@ class MinecraftOddsCommand extends ICommand {
       const type = interaction.options.getString('type')!;
       const compare = interaction.options.getString('compare');
 
+      await interaction.reply('Calculando...');
+
       const result = await calculateEyeOdds(count, type, compare);
 
       const replyOptions: any = {
@@ -223,10 +224,10 @@ class MinecraftOddsCommand extends ICommand {
         ];
       }
 
-      return await interaction.reply(replyOptions);
+      return await interaction.editReply(replyOptions);
     } catch (err) {
       console.error('Error calculating eye odds:', err);
-      return await interaction.reply('Erro ao calcular odds dos olhos.');
+      return await interaction.editReply('Erro ao calcular odds dos olhos.');
     }
   }
 
@@ -237,10 +238,12 @@ class MinecraftOddsCommand extends ICommand {
       const type = interaction.options.getString('type')!;
       const compare = interaction.options.getString('compare');
 
+      await interaction.reply('Calculando...');
+
       const result = await calculateBlazeOdds(kills, rods, type, compare);
 
       const replyOptions: any = {
-        // content: `<@${interaction.user.id}> ${result.message}`
+        content: `<@${interaction.user.id}> ${result.message}`
       };
 
       // If a chart was generated, attach it
@@ -253,10 +256,10 @@ class MinecraftOddsCommand extends ICommand {
         ];
       }
 
-      return await interaction.reply(replyOptions);
+      return await interaction.editReply(replyOptions);
     } catch (err) {
       console.error('Error calculating blaze odds:', err);
-      return await interaction.reply('Erro ao calcular odds dos blazes.');
+      return await interaction.editReply('Erro ao calcular odds dos blazes.');
     }
   }
 
@@ -266,6 +269,8 @@ class MinecraftOddsCommand extends ICommand {
       const flints = interaction.options.getInteger('flints')!;
       const type = interaction.options.getString('type')!;
       const compare = interaction.options.getString('compare');
+
+      await interaction.reply('Calculando...');
 
       const result = await calculateFlintOdds(gravels, flints, type, compare);
 
@@ -283,10 +288,10 @@ class MinecraftOddsCommand extends ICommand {
         ];
       }
 
-      return await interaction.reply(replyOptions);
+      return await interaction.editReply(replyOptions);
     } catch (err) {
       console.error('Error calculating flint odds:', err);
-      return await interaction.reply('Erro ao calcular odds dos flints.');
+      return await interaction.editReply('Erro ao calcular odds dos flints.');
     }
   }
 
