@@ -73,3 +73,8 @@ out/
 
 # Generated charts
 charts/
+/generated/prisma
+
+# Database files
+prisma/dev.db
+prisma/dev.db-journal

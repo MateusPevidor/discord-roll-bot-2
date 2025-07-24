@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Guild configuration table
+model Guild {
+  id                String   @id // Discord guild ID
+  trackerChannelId  String?  // Discord channel ID for tracker messages
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  trackedPlayers    TrackedPlayer[]
+  sentMatches       SentMatch[]
+
+  @@map("guilds")
+}
+
+// Players/countries being tracked per guild
+model TrackedPlayer {
+  id          Int      @id @default(autoincrement())
+  guildId     String   // Discord guild ID
+  target      String   // Player name or country code
+  isCountry   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  // Ensure no duplicate tracking entries per guild
+  @@unique([guildId, target, isCountry])
+  @@map("tracked_players")
+}
+
+// Track sent matches to prevent duplicates
+model SentMatch {
+  id        Int      @id @default(autoincrement())
+  guildId   String   // Discord guild ID
+  matchId   String   // MCSR API match ID
+  sentAt    DateTime @default(now())
+
+  // Relations
+  guild     Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  // Ensure no duplicate match notifications per guild
+  @@unique([guildId, matchId])
+  @@map("sent_matches")
+}

@@ -7,6 +7,7 @@ import { MinecraftOddsCommand } from './commands/minecraft-odds';
 import { ConnectionCommand } from './commands/connection';
 import { DiceOddsCommand } from './commands/dice-odds';
 import { TrackerCommand } from './commands/tracker';
+import PollingService from '../services/polling';
 
 interface Commands {
   [id: string]: ICommand;
@@ -49,6 +50,10 @@ export abstract class RollBot {
       });
 
       console.log('Bot is online! ', c.user.tag);
+
+      // Start MCSR match polling
+      const pollingService = PollingService.getInstance(RollBot.client);
+      pollingService.startPolling(15); // Check every 15 seconds
     });
 
     RollBot.client.on(Events.InteractionCreate, async (interaction) => {

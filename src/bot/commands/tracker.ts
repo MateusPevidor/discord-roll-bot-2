@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction } from 'discord.js';
 import { ICommand } from '../interfaces/command';
+import DatabaseService from '../../services/database';
 
 import Logger from '../decorators/execution-logger';
 
@@ -91,7 +92,8 @@ class TrackerCommand extends ICommand {
         });
       }
 
-      // TODO: Store the channel ID for this guild in a database
+      const db = DatabaseService.getInstance();
+      await db.setTrackerChannel(guildId, channelId);
 
       return await interaction.reply({
         content: `✅ This channel (<#${channelId}>) has been set as the tracker channel for MCSR ranked matches.`,
@@ -119,7 +121,18 @@ class TrackerCommand extends ICommand {
         });
       }
 
-      // TODO: Add the player/country to the tracking list for this guild
+      const db = DatabaseService.getInstance();
+      const wasAdded = await db.addTrackedPlayer(guildId, target, isCountry);
+
+      if (!wasAdded) {
+        const type = isCountry ? 'country' : 'player';
+        return await interaction.reply({
+          content: `❌ ${
+            isCountry ? target.toUpperCase() : target
+          } is already being tracked as a ${type}.`,
+          ephemeral: true
+        });
+      }
 
       if (isCountry) {
         return await interaction.reply({
@@ -154,7 +167,22 @@ class TrackerCommand extends ICommand {
         });
       }
 
-      // TODO: Remove the player/country from the tracking list for this guild
+      const db = DatabaseService.getInstance();
+      const wasRemoved = await db.removeTrackedPlayer(
+        guildId,
+        target,
+        isCountry
+      );
+
+      if (!wasRemoved) {
+        const type = isCountry ? 'country' : 'player';
+        return await interaction.reply({
+          content: `❌ ${
+            isCountry ? target.toUpperCase() : target
+          } was not found in the tracking list as a ${type}.`,
+          ephemeral: true
+        });
+      }
 
       if (isCountry) {
         return await interaction.reply({
@@ -187,15 +215,14 @@ class TrackerCommand extends ICommand {
         });
       }
 
-      // TODO: Fetch the actual tracked players/countries from the database
-
-      const trackerChannelId = 'Not set'; // TODO: Get from database
-      const trackedPlayers: string[] = []; // TODO: Get from database
-      const trackedCountries: string[] = []; // TODO: Get from database
+      const db = DatabaseService.getInstance();
+      const trackerChannelId = await db.getTrackerChannel(guildId);
+      const { players: trackedPlayers, countries: trackedCountries } =
+        await db.getTrackedPlayers(guildId);
 
       let content = '📊 **MCSR Ranked Match Tracker Status**\n\n';
 
-      if (trackerChannelId === 'Not set') {
+      if (!trackerChannelId) {
         content += '❌ **Tracker Channel:** Not configured\n';
         content += 'Use `/tracker set` to set up a tracker channel first.\n\n';
       } else {
