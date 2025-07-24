@@ -9,6 +9,7 @@ import { TempCommand } from './commands/temp';
 import { MinecraftOddsCommand } from './commands/minecraft-odds';
 import { DiceOddsCommand } from './commands/dice-odds';
 import { ConnectionCommand } from './commands/connection';
+import { TrackerCommand } from './commands/tracker';
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN || '');
 
@@ -21,7 +22,8 @@ const loadCommands = () => {
     new TempCommand(),
     new MinecraftOddsCommand(),
     new DiceOddsCommand(),
-    new ConnectionCommand()
+    new ConnectionCommand(),
+    new TrackerCommand()
   ].map(({ command }) => ({
     integration_types: [0, 1],
     contexts: [0, 1, 2],

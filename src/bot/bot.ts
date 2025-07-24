@@ -6,6 +6,7 @@ import { TempCommand } from './commands/temp';
 import { MinecraftOddsCommand } from './commands/minecraft-odds';
 import { ConnectionCommand } from './commands/connection';
 import { DiceOddsCommand } from './commands/dice-odds';
+import { TrackerCommand } from './commands/tracker';
 
 interface Commands {
   [id: string]: ICommand;
@@ -35,13 +36,15 @@ export abstract class RollBot {
       commands.mcodds = new MinecraftOddsCommand();
       commands.diceodds = new DiceOddsCommand();
       commands.connection = new ConnectionCommand();
+      commands.tracker = new TrackerCommand();
 
       RollBot.client.user?.setPresence({
         activities: [
           { name: '/temp' },
           { name: '/roll' },
           { name: '/diceodds' },
-          { name: '/mcodds' }
+          { name: '/mcodds' },
+          { name: '/tracker' }
         ]
       });
 
