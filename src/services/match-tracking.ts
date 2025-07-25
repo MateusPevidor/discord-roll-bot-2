@@ -125,10 +125,10 @@ class MatchTrackingService {
     const timeFormatted = this.api.formatMatchTime(match.result.time);
 
     let title = '🏆 **MCSR Ranked Match**';
-    if (match.forfeited) {
-      title = '⚠️ **MCSR Ranked Match (Forfeited)**';
-    } else if (isDraw) {
+    if (isDraw) {
       title = '🤝 **MCSR Ranked Match (Draw)**';
+    } else if (match.forfeited) {
+      title = '🏳️ **MCSR Ranked Match (Forfeited)**';
     }
 
     let description = '';
@@ -152,10 +152,10 @@ class MatchTrackingService {
       if (player1 && player2) {
         const player1Flag = player1.country
           ? `:flag_${player1.country}:`
-          : '🏳️';
+          : '🌍';
         const player2Flag = player2.country
           ? `:flag_${player2.country}:`
-          : '🏳️';
+          : '🌍';
 
         description += `**Player 1:** ${player1Flag} **${player1.nickname}** (${
           player1.eloRate
@@ -175,8 +175,8 @@ class MatchTrackingService {
         }
       }
     } else if (winner && loser) {
-      const winnerFlag = winner.country ? `:flag_${winner.country}:` : '🏳️';
-      const loserFlag = loser.country ? `:flag_${loser.country}:` : '🏳️';
+      const winnerFlag = winner.country ? `:flag_${winner.country}:` : '🌍';
+      const loserFlag = loser.country ? `:flag_${loser.country}:` : '🌍';
 
       description += `**Winner:** ${winnerFlag} **${winner.nickname}** (${
         winner.eloRate
