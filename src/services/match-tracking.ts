@@ -114,14 +114,21 @@ class MatchTrackingService {
   generateMatchEmbed(notification: MatchNotification): any {
     const { match, trackedPlayers, trackedCountries } = notification;
 
-    const winner = match.players.find((p) => p.uuid === match.result.uuid);
-    const loser = match.players.find((p) => p.uuid !== match.result.uuid);
+    const winner = match.result.uuid
+      ? match.players.find((p) => p.uuid === match.result.uuid)
+      : null;
+    const loser = match.result.uuid
+      ? match.players.find((p) => p.uuid !== match.result.uuid)
+      : null;
+    const isDraw = !match.result.uuid;
 
     const timeFormatted = this.api.formatMatchTime(match.result.time);
 
     let title = '🏆 **MCSR Ranked Match**';
     if (match.forfeited) {
       title = '⚠️ **MCSR Ranked Match (Forfeited)**';
+    } else if (isDraw) {
+      title = '🤝 **MCSR Ranked Match (Draw)**';
     }
 
     let description = '';
@@ -138,7 +145,36 @@ class MatchTrackingService {
 
     description += '\n';
 
-    if (winner && loser) {
+    if (isDraw) {
+      const player1 = match.players[0];
+      const player2 = match.players[1];
+
+      if (player1 && player2) {
+        const player1Flag = player1.country
+          ? `:flag_${player1.country}:`
+          : '🏳️';
+        const player2Flag = player2.country
+          ? `:flag_${player2.country}:`
+          : '🏳️';
+
+        description += `**Player 1:** ${player1Flag} **${player1.nickname}** (${
+          player1.eloRate
+        } → ${
+          player1.eloRate +
+          (match.changes.find((c) => c.uuid === player1.uuid)?.change || 0)
+        })\n`;
+        description += `**Player 2:** ${player2Flag} **${player2.nickname}** (${
+          player2.eloRate
+        } → ${
+          player2.eloRate +
+          (match.changes.find((c) => c.uuid === player2.uuid)?.change || 0)
+        })\n`;
+
+        if (!match.forfeited) {
+          description += `**Time:** ${timeFormatted}\n`;
+        }
+      }
+    } else if (winner && loser) {
       const winnerFlag = winner.country ? `:flag_${winner.country}:` : '🏳️';
       const loserFlag = loser.country ? `:flag_${loser.country}:` : '🏳️';
 
@@ -169,7 +205,7 @@ class MatchTrackingService {
         {
           title,
           description,
-          color: match.forfeited ? 0xffa500 : 0x00ff00, // Orange for forfeited, green for completed
+          color: match.forfeited ? 0xffa500 : isDraw ? 0x808080 : 0x00ff00, // Orange for forfeited, gray for draw, green for completed
           footer: {
             text: `Match ID: ${match.id} | Season ${match.season}`
           },

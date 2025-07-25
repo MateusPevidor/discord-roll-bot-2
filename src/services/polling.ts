@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { Client, TextChannel } from 'discord.js';
 import MatchTrackingService from './match-tracking';
 
 class PollingService {
@@ -78,7 +78,7 @@ class PollingService {
       }
 
       const embed = this.trackingService.generateMatchEmbed(notification);
-      await channel.send(embed);
+      await (channel as TextChannel).send(embed);
     } catch (error) {
       console.error(error);
     }
