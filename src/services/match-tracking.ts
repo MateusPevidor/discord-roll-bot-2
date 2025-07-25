@@ -205,7 +205,7 @@ class MatchTrackingService {
         {
           title,
           description,
-          color: match.forfeited ? 0xffa500 : isDraw ? 0x808080 : 0x00ff00, // Orange for forfeited, gray for draw, green for completed
+          color: isDraw ? 0x808080 : match.forfeited ? 0xffa500 : 0x00ff00, // Orange for forfeited, gray for draw, green for completed
           footer: {
             text: `Match ID: ${match.id} | Season ${match.season}`
           },
