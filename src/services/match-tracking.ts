@@ -139,8 +139,8 @@ class MatchTrackingService {
 
     if (trackedCountries.length > 0) {
       description += `**Tracked Countries:** ${trackedCountries
-        .map((c) => c.toUpperCase())
-        .join(', ')}\n`;
+        .map((c) => `:flag_${c.toLowerCase()}: ${c.toUpperCase()}`)
+        .join(' | ')}\n`;
     }
 
     description += '\n';
@@ -178,18 +178,14 @@ class MatchTrackingService {
       const winnerFlag = winner.country ? `:flag_${winner.country}:` : '🌍';
       const loserFlag = loser.country ? `:flag_${loser.country}:` : '🌍';
 
+      const winnerChange = match.changes.find((c) => c.uuid === winner.uuid);
+      const loserChange = match.changes.find((c) => c.uuid === loser.uuid);
       description += `**Winner:** ${winnerFlag} **${winner.nickname}** (${
-        winner.eloRate
-      } → ${
-        winner.eloRate +
-        (match.changes.find((c) => c.uuid === winner.uuid)?.change || 0)
-      })\n`;
+        winnerChange?.eloRate
+      } → ${(winnerChange?.eloRate || 0) + (winnerChange?.change || 0)})\n`;
       description += `**Loser:** ${loserFlag} **${loser.nickname}** (${
-        loser.eloRate
-      } → ${
-        loser.eloRate +
-        (match.changes.find((c) => c.uuid === loser.uuid)?.change || 0)
-      })\n`;
+        loserChange?.eloRate
+      } → ${(loserChange?.eloRate || 0) + (loserChange?.change || 0)})\n`;
 
       if (!match.forfeited) {
         description += `**Time:** ${timeFormatted}\n`;

@@ -244,7 +244,7 @@ class TrackerCommand extends ICommand {
         if (trackedCountries.length > 0) {
           content += '🌍 **Tracked Countries:**\n';
           trackedCountries.forEach((country) => {
-            content += `• ${country.toUpperCase()}\n`;
+            content += `• :flag_${country.toLowerCase()}: ${country.toUpperCase()}\n`;
           });
         }
       }
