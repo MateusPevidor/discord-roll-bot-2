@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, PermissionFlagsBits } from 'discord.js';
 import { ICommand } from '../interfaces/command';
 import DatabaseService from '../../services/database';
 
@@ -9,6 +9,7 @@ class TrackerCommand extends ICommand {
     super('tracker', 'Manages MCSR ranked match tracking for this server');
 
     this.command
+      .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
       .addSubcommand((subcommand) => {
         return subcommand
           .setName('set')
