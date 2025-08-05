@@ -196,6 +196,11 @@ class MatchTrackingService {
     description += `**Bastion Type:** ${match.bastionType}\n`;
     description += `**Date:** ${this.api.formatMatchDate(match.date)}\n`;
 
+    const matchPlayerUrl =
+      winner?.nickname || loser?.nickname || match.players[0].nickname;
+    const matchUrl = `https://mcsrranked.com/stats/${matchPlayerUrl}/${match.id}`;
+    description += `\n[View Match Details](${matchUrl})\n`;
+
     return {
       embeds: [
         {
