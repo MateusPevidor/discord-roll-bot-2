@@ -20,7 +20,7 @@ abstract class ICommand {
 
   abstract execute(
     interaction: Interaction
-  ): Promise<InteractionResponse<boolean> | Message<boolean>>;
+  ): Promise<InteractionResponse<boolean> | Message<boolean> | undefined>;
 }
 
 export { ICommand };
