@@ -8,6 +8,8 @@ import { ConnectionCommand } from './commands/connection';
 import { DiceOddsCommand } from './commands/dice-odds';
 import { TrackerCommand } from './commands/tracker';
 import PollingService from '../services/polling';
+import { AskAiCommand } from './commands/ask-ai';
+import { AiExplainCommand } from './commands/ai-explain';
 
 interface Commands {
   [id: string]: ICommand;
@@ -38,6 +40,8 @@ export abstract class RollBot {
       commands.diceodds = new DiceOddsCommand();
       commands.connection = new ConnectionCommand();
       commands.tracker = new TrackerCommand();
+      commands['ask-ai'] = new AskAiCommand();
+      commands['ai-explain'] = new AiExplainCommand();
 
       RollBot.client.user?.setPresence({
         activities: [
@@ -62,7 +66,7 @@ export abstract class RollBot {
       const command = commands[interaction.commandName];
 
       try {
-        await command.execute(interaction);
+        if (command) await command.execute(interaction);
       } catch (err) {
         console.log(err);
       }

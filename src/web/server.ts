@@ -1,5 +1,6 @@
 import Express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
+import path from 'path';
 
 import Routes from './routes';
 
@@ -15,6 +16,10 @@ export abstract class Server {
     app.use(cors());
 
     app.use('/', Routes);
+
+    app.use(
+      Express.static(path.join(__dirname, '../../public'))
+    );
 
     app.use((err: Error, _: Request, res: Response, __: NextFunction) => {
       if (err instanceof AppError) {

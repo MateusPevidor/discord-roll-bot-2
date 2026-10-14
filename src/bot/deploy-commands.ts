@@ -10,6 +10,8 @@ import { MinecraftOddsCommand } from './commands/minecraft-odds';
 import { DiceOddsCommand } from './commands/dice-odds';
 import { ConnectionCommand } from './commands/connection';
 import { TrackerCommand } from './commands/tracker';
+import { AskAiCommand } from './commands/ask-ai';
+import { AiExplainCommand } from './commands/ai-explain';
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN || '');
 
@@ -23,7 +25,9 @@ const loadCommands = () => {
     new MinecraftOddsCommand(),
     new DiceOddsCommand(),
     new ConnectionCommand(),
-    new TrackerCommand()
+    new TrackerCommand(),
+    new AskAiCommand(),
+    new AiExplainCommand()
   ].map(({ command }) => ({
     integration_types: [0, 1],
     contexts: [0, 1, 2],

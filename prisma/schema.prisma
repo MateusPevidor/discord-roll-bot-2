@@ -54,3 +54,36 @@ model SentMatch {
   @@unique([guildId, matchId])
   @@map("sent_matches")
 }
+
+model AiResponse {
+  id             Int      @id @default(autoincrement())
+  tokenHash      String   @unique
+  commandType    String
+  shortAnswer    String
+  detailedAnswer String
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
+
+  @@index([expiresAt])
+  @@map("ai_responses")
+}
+
+model AiUsage {
+  id             Int       @id @default(autoincrement())
+  interactionId  String    @unique
+  userId         String
+  guildId        String
+  admittedAt     DateTime  @default(now())
+  budgetDay      String
+  status         String
+  reservedTokens Int
+  chargedTokens  Int       @default(0)
+  recoveryAt     DateTime
+  completedAt    DateTime?
+
+  @@index([userId, admittedAt])
+  @@index([guildId, admittedAt])
+  @@index([budgetDay])
+  @@index([status, recoveryAt])
+  @@map("ai_usage")
+}
